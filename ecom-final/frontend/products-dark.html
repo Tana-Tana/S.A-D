@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sản phẩm — EcomAI Dark</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style-dark.css"/>
+  <style>
+    .dk-filter-box {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+      backdrop-filter: var(--blur-sm);
+      position: sticky;
+      top: 90px;
+    }
+    .dk-filter-title { font-size: .82rem; font-weight: 700; color: var(--text-primary); margin-bottom: .65rem; text-transform: uppercase; letter-spacing: .5px; }
+    .dk-filter-option { display: flex; align-items: center; gap: .5rem; padding: .32rem 0; font-size: .855rem; color: var(--text-secondary); cursor: pointer; }
+    .dk-filter-option input { accent-color: var(--neon-a); }
+    .dk-filter-option:hover { color: var(--text-primary); }
+    .dk-sort-select {
+      background: var(--glass); border: 1px solid var(--border); border-radius: 9px;
+      padding: .42rem .85rem; font-size: .855rem; color: var(--text-primary);
+      outline: none; cursor: pointer; font-family: inherit;
+    }
+    .dk-sort-select option { background: var(--bg-800); }
+    .dk-price-input {
+      flex: 1; background: var(--bg-700); border: 1px solid var(--border);
+      border-radius: 8px; padding: .35rem .6rem; font-size: .8rem;
+      color: var(--text-primary); outline: none; font-family: inherit;
+    }
+    .dk-price-input:focus { border-color: var(--neon-a); }
+    .dk-page-btn {
+      width: 36px; height: 36px; background: var(--glass); border: 1px solid var(--border);
+      border-radius: 8px; cursor: pointer; font-size: .855rem; font-weight: 600;
+      color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+      transition: all .2s; font-family: inherit;
+    }
+    .dk-page-btn:hover, .dk-page-btn.active {
+      background: var(--neon-a); border-color: var(--neon-a); color: #fff;
+    }
+    .dk-results-count { font-size: .855rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="dk-navbar">
+  <div class="container d-flex align-items-center gap-3">
+    <a class="dk-brand" href="index-dark.html">EcomAI</a>
+    <div class="d-none d-md-flex gap-1 ms-2">
+      <a href="index-dark.html"    class="dk-nav-link">Trang chủ</a>
+      <a href="products-dark.html" class="dk-nav-link active">Sản phẩm</a>
+      <a href="cart-dark.html"     class="dk-nav-link">Giỏ hàng</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <input class="dk-search d-none d-md-block" id="nav-search" placeholder="🔍  Tìm sản phẩm..."/>
+      <div id="auth-area"></div>
+      <a href="cart-dark.html" class="dk-cart-btn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count hidden dk-badge">0</span>
+      </a>
+      <a href="products.html" style="color:var(--text-muted);font-size:.8rem;text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:.3rem .65rem">
+        <i class="fas fa-sun"></i> Light
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="border-bottom:1px solid var(--border);padding:1rem 0;background:var(--glass);backdrop-filter:var(--blur-sm)">
+  <div class="container d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h1 style="font-size:1.4rem;font-weight:800;margin:0;color:var(--text-primary)">Tất cả sản phẩm</h1>
+      <p class="dk-results-count mb-0" id="results-count">Đang tải...</p>
+    </div>
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <input id="search-box" class="dk-search" placeholder="🔍 Tìm trong kết quả..." style="width:220px"/>
+      <select id="sort-select" class="dk-sort-select" onchange="applyFilters()">
+        <option value="-created_at">Mới nhất</option>
+        <option value="price">Giá tăng dần</option>
+        <option value="-price">Giá giảm dần</option>
+        <option value="-rating">Đánh giá cao</option>
+        <option value="-sold_count">Bán chạy</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- SIDEBAR -->
+    <div class="col-lg-3 col-md-4 d-none d-md-block">
+      <div class="dk-filter-box">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span style="font-weight:800;font-size:.95rem;color:var(--text-primary)">Bộ lọc</span>
+          <button onclick="clearFilters()" style="background:none;border:none;color:var(--text-muted);font-size:.78rem;cursor:pointer;font-family:inherit">Xóa hết</button>
+        </div>
+
+        <div class="dk-filter-title"><i class="fas fa-th-large me-1" style="color:var(--neon-a)"></i> Danh mục</div>
+        <label class="dk-filter-option"><input type="radio" name="type" value="" onchange="applyFilters()" checked> 🛍️ Tất cả</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="electronics" onchange="applyFilters()"> 💻 Điện tử</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="book" onchange="applyFilters()"> 📚 Sách</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="fashion" onchange="applyFilters()"> 👗 Thời trang</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="food" onchange="applyFilters()"> 🍜 Thực phẩm</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="sports" onchange="applyFilters()"> ⚽ Thể thao</label>
+        <label class="dk-filter-option"><input type="radio" name="type" value="beauty" onchange="applyFilters()"> 💄 Làm đẹp</label>
+
+        <hr style="border-color:var(--border);margin:1rem 0">
+
+        <div class="dk-filter-title"><i class="fas fa-tag me-1" style="color:var(--neon-a)"></i> Khoảng giá</div>
+        <div class="d-flex gap-2 align-items-center mb-2">
+          <input class="dk-price-input" id="min-price" type="number" placeholder="Từ"/>
+          <span style="color:var(--text-muted)">—</span>
+          <input class="dk-price-input" id="max-price" type="number" placeholder="Đến"/>
+        </div>
+        <button onclick="applyFilters()" class="dk-btn-primary" style="padding:.45rem 1rem;font-size:.82rem;border-radius:9px;width:100%">Áp dụng</button>
+
+        <hr style="border-color:var(--border);margin:1rem 0">
+        <div class="dk-filter-title"><i class="fas fa-star me-1" style="color:var(--neon-a)"></i> Đánh giá</div>
+        <label class="dk-filter-option"><input type="checkbox" id="rating-filter"> ★★★★★ Từ 4 sao</label>
+      </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="col-lg-9 col-md-8">
+      <div id="product-grid" class="row g-3"></div>
+      <div class="d-flex gap-2 justify-content-center flex-wrap mt-4" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="dk-chatbot-fab" onclick="toggleChatbot()"><i class="fas fa-robot" id="chatbot-icon"></i></button>
+<div class="dk-chatbot-panel hidden" id="chatbot-panel">
+  <div class="dk-chatbot-header">
+    <div class="dk-chatbot-avatar">🤖</div>
+    <div><div class="dk-chatbot-name">EcomAI Assistant</div><div class="dk-chatbot-status">● AI tư vấn sản phẩm</div></div>
+    <button class="dk-chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="dk-chatbot-msgs" id="chatbot-messages"></div>
+  <div class="dk-chatbot-input-area">
+    <input id="chatbot-input" class="dk-chatbot-input" placeholder="Hỏi về sản phẩm..." onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="dk-chatbot-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<footer class="dk-footer" style="margin-top:2rem">
+  <div class="container"><div class="dk-footer-bottom" style="border-top:none;padding-top:0">© 2026 EcomAI Dark</div></div>
+</footer>
+
+<script src="js/api.js?v=4"></script>
+<script src="js/products-data.js?v=4"></script>
+<script src="js/chatbot.js?v=4"></script>
+<script>
+const PAGE_SIZE = 12;
+let allProducts = [], currentPage = 1;
+
+const urlParams = new URLSearchParams(location.search);
+const initType  = urlParams.get('type') || '';
+const initQ     = urlParams.get('q')    || '';
+if (initType) { const r = document.querySelector(`input[name=type][value="${initType}"]`); if (r) r.checked = true; }
+if (initQ)    { document.getElementById('search-box').value = initQ; }
+
+function buildCard(p) {
+  const v   = getVisual(p.product_type);
+  const img = p.image_url || getTypeImage(p.product_type, p.id);
+  return `
+  <div class="col-6 col-md-6 col-lg-4">
+    <div class="dk-card" onclick="location.href='product-detail-dark.html?id=${p.id}'">
+      <div class="dk-card-img" style="background:${v.gradient}">
+        <img src="${img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+        ${p.discount_percent > 0 ? `<span class="dk-card-badge">-${p.discount_percent}%</span>` : ''}
+        <button class="dk-card-wish" onclick="event.stopPropagation()"><i class="far fa-heart"></i></button>
+      </div>
+      <div class="dk-card-body">
+        <div class="dk-card-type">${v.icon} ${fmt.typeLabel(p.product_type)}</div>
+        <div class="dk-card-name">${p.name}</div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="dk-card-stars">${fmt.stars(p.rating||4)}</span>
+          <span class="dk-card-sold">(${p.sold_count||0})</span>
+        </div>
+        <div class="dk-card-footer">
+          <div>
+            <div class="dk-price">${fmt.price(p.price)}</div>
+            ${p.original_price ? `<div class="dk-price-old">${fmt.price(p.original_price)}</div>` : ''}
+          </div>
+          <button class="dk-add-btn" onclick="event.stopPropagation();Cart.add(${JSON.stringify(p).replace(/"/g,'&quot;')});Toast.show('Đã thêm!')">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function filtered() {
+  const type  = document.querySelector('input[name=type]:checked')?.value || '';
+  const q     = document.getElementById('search-box').value.toLowerCase();
+  const minP  = parseFloat(document.getElementById('min-price').value) || 0;
+  const maxP  = parseFloat(document.getElementById('max-price').value) || Infinity;
+  const hiRat = document.getElementById('rating-filter').checked;
+  const sort  = document.getElementById('sort-select').value;
+
+  let list = allProducts.filter(p => {
+    if (type && p.product_type !== type) return false;
+    if (q && !p.name.toLowerCase().includes(q)) return false;
+    if (minP && p.price < minP) return false;
+    if (maxP < Infinity && p.price > maxP) return false;
+    if (hiRat && (p.rating||0) < 4) return false;
+    return true;
+  });
+
+  list.sort((a,b) => {
+    if (sort === 'price')       return a.price - b.price;
+    if (sort === '-price')      return b.price - a.price;
+    if (sort === '-rating')     return (b.rating||0) - (a.rating||0);
+    if (sort === '-sold_count') return (b.sold_count||0) - (a.sold_count||0);
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  document.getElementById('results-count').textContent = `${list.length} sản phẩm`;
+  return list;
+}
+
+function renderPage(products, page) {
+  const slice = products.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
+  const grid  = document.getElementById('product-grid');
+  grid.innerHTML = slice.length
+    ? slice.map(buildCard).join('')
+    : `<div class="col-12 text-center py-5" style="color:var(--text-muted)">
+         <i class="fas fa-search" style="font-size:3rem;opacity:.3;margin-bottom:1rem;display:block"></i>
+         <p>Không tìm thấy sản phẩm phù hợp.</p>
+         <button onclick="clearFilters()" class="dk-btn-primary" style="padding:.5rem 1.5rem;border-radius:50px;margin-top:.5rem">Xóa bộ lọc</button>
+       </div>`;
+  renderPagination(products.length, page);
+}
+
+function renderPagination(total, page) {
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const el = document.getElementById('pagination');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  let html = '';
+  for (let i = 1; i <= Math.min(pages, 8); i++)
+    html += `<button class="dk-page-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) { currentPage = p; renderPage(filtered(), p); window.scrollTo({top:0,behavior:'smooth'}); }
+function applyFilters() { currentPage = 1; renderPage(filtered(), 1); }
+function clearFilters() {
+  document.querySelectorAll('input[name=type]')[0].checked = true;
+  document.getElementById('search-box').value = '';
+  document.getElementById('min-price').value  = '';
+  document.getElementById('max-price').value  = '';
+  document.getElementById('rating-filter').checked = false;
+  document.getElementById('sort-select').value = '-created_at';
+  applyFilters();
+}
+
+async function loadProducts() {
+  try {
+    const data = await API.getProducts({ page_size: 100 });
+    allProducts = data.results || data || [];
+    if (!allProducts.length) allProducts = MOCK_PRODUCTS;
+    applyFilters();
+  } catch {
+    allProducts = MOCK_PRODUCTS;
+    applyFilters();
+  }
+}
+
+document.getElementById('search-box').addEventListener('input', applyFilters);
+document.getElementById('nav-search').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.value.trim())
+    document.getElementById('search-box').value = e.target.value.trim(), applyFilters();
+});
+
+// Auth area
+window.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  const area = document.getElementById('auth-area');
+  if (area && user) {
+    const av = (user.first_name||user.username||'U')[0].toUpperCase();
+    area.innerHTML = `<div class="d-flex align-items-center gap-2">
+      <div style="width:30px;height:30px;background:var(--grad-main);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem">${av}</div>
+      <button onclick="Auth.logout()" style="background:none;border:1px solid var(--border);border-radius:7px;padding:.25rem .65rem;font-size:.75rem;color:var(--text-muted);cursor:pointer">Đăng xuất</button>
+    </div>`;
+  } else if (area) {
+    area.innerHTML = `<a href="auth-dark.html" style="background:var(--grad-main);color:#fff;border-radius:9px;padding:.38rem .9rem;font-size:.82rem;font-weight:600;text-decoration:none">Đăng nhập</a>`;
+  }
+});
+
+loadProducts();
+</script>
+</body>
+</html>

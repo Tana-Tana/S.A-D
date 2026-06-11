@@ -1,0 +1,27 @@
+{
+  "best_model": "bilstm",
+  "best_model_label": "BiLSTM",
+  "metrics": {
+    "rnn": {
+      "test_loss": 0.9587087043126424,
+      "accuracy": 0.5866666666666667,
+      "precision_macro": 0.5171410499683745,
+      "recall_macro": 0.5447884416924665,
+      "f1_macro": 0.5147058823529412
+    },
+    "lstm": {
+      "test_loss": 0.9629996697107951,
+      "accuracy": 0.5733333333333334,
+      "precision_macro": 0.4544504181600956,
+      "recall_macro": 0.5143446852425181,
+      "f1_macro": 0.4700512276982865
+    },
+    "bilstm": {
+      "test_loss": 0.9950459861755371,
+      "accuracy": 0.5866666666666667,
+      "precision_macro": 0.5303030303030303,
+      "recall_macro": 0.5477296181630548,
+      "f1_macro": 0.5266958070260644
+    }
+  }
+}

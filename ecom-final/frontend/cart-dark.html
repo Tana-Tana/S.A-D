@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Giỏ hàng — EcomAI Dark</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style-dark.css"/>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="dk-navbar">
+  <div class="container d-flex align-items-center gap-3">
+    <a class="dk-brand" href="index-dark.html">EcomAI</a>
+    <div class="d-none d-md-flex gap-1 ms-2">
+      <a href="index-dark.html"    class="dk-nav-link">Trang chủ</a>
+      <a href="products-dark.html" class="dk-nav-link">Sản phẩm</a>
+      <a href="cart-dark.html"     class="dk-nav-link active">Giỏ hàng</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <div id="auth-area"></div>
+      <a href="cart-dark.html" class="dk-cart-btn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count hidden dk-badge">0</span>
+      </a>
+      <a href="cart.html" style="color:var(--text-muted);font-size:.8rem;text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:.3rem .65rem">
+        <i class="fas fa-sun"></i> Light
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="background:var(--glass);border-bottom:1px solid var(--border);padding:1rem 0;backdrop-filter:var(--blur-sm)">
+  <div class="container">
+    <h1 style="font-size:1.4rem;font-weight:800;margin:0;color:var(--text-primary)">
+      <i class="fas fa-shopping-bag me-2" style="color:var(--neon-a)"></i>Giỏ hàng của bạn
+    </h1>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row g-4">
+
+    <!-- CART ITEMS -->
+    <div class="col-lg-8">
+      <div id="cart-empty" class="hidden" style="text-align:center;padding:4rem 0;color:var(--text-muted)">
+        <div style="margin-bottom:1rem"><i class="fas fa-shopping-bag" style="font-size:3.5rem;opacity:.2;color:var(--neon-a)"></i></div>
+        <h4 style="font-weight:700;color:var(--text-secondary)">Giỏ hàng trống</h4>
+        <p>Hãy thêm sản phẩm để tiến hành mua sắm!</p>
+        <a href="products-dark.html" class="dk-btn-primary" style="display:inline-flex;text-decoration:none;border-radius:50px;padding:.65rem 2rem">
+          <i class="fas fa-store me-2"></i>Khám phá sản phẩm
+        </a>
+      </div>
+      <div id="cart-items-list"></div>
+
+      <!-- Coupon -->
+      <div style="background:var(--glass);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;backdrop-filter:var(--blur-sm)">
+        <div style="font-size:.82rem;font-weight:700;color:var(--text-secondary);margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.5px">
+          <i class="fas fa-ticket-alt me-1" style="color:var(--neon-a)"></i> Mã giảm giá
+        </div>
+        <div class="d-flex gap-2">
+          <input id="coupon-input" class="dk-input" placeholder="Nhập mã coupon..." style="border-radius:9px;flex:1"/>
+          <button onclick="applyCoupon()" class="dk-btn-primary" style="padding:.5rem 1.2rem;border-radius:9px;font-size:.875rem">Áp dụng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="col-lg-4">
+      <div class="dk-summary-card">
+        <h5 style="font-weight:800;color:var(--text-primary);margin-bottom:1.25rem">Tóm tắt đơn hàng</h5>
+        <div class="dk-summary-row">
+          <span>Tạm tính (<span id="item-count">0</span> sp)</span>
+          <span id="subtotal">0 ₫</span>
+        </div>
+        <div class="dk-summary-row">
+          <span>Phí vận chuyển</span>
+          <span style="color:var(--neon-d);font-weight:600">30.000 ₫</span>
+        </div>
+        <div class="dk-summary-row" id="discount-row" style="display:none">
+          <span>Giảm giá</span>
+          <span id="discount-amount" style="color:var(--neon-r);font-weight:600"></span>
+        </div>
+        <div class="dk-summary-row total">
+          <span>Tổng cộng</span>
+          <span class="price" id="total-price">0 ₫</span>
+        </div>
+
+        <button onclick="checkout()" class="dk-btn-primary mt-3" style="width:100%;justify-content:center;border-radius:12px">
+          <i class="fas fa-lock me-2"></i>Tiến hành thanh toán
+        </button>
+        <a href="products-dark.html" style="display:block;text-align:center;margin-top:1rem;font-size:.855rem;color:var(--text-muted);text-decoration:none">
+          <i class="fas fa-arrow-left me-1"></i>Tiếp tục mua sắm
+        </a>
+        <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+          <span style="font-size:.75rem;color:var(--text-muted)"><i class="fas fa-shield-alt me-1" style="color:var(--neon-d)"></i>Bảo mật SSL</span>
+          <span style="font-size:.75rem;color:var(--text-muted)"><i class="fas fa-undo me-1" style="color:var(--neon-b)"></i>Đổi trả dễ dàng</span>
+          <span style="font-size:.75rem;color:var(--text-muted)"><i class="fas fa-truck me-1" style="color:var(--neon-a)"></i>Giao nhanh</span>
+        </div>
+      </div>
+
+      <!-- Payment methods -->
+      <div class="dk-summary-card mt-3">
+        <div style="font-weight:700;font-size:.875rem;color:var(--text-primary);margin-bottom:.85rem">Phương thức thanh toán</div>
+        <div class="d-flex flex-wrap gap-2">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.855rem;cursor:pointer;padding:.4rem .7rem;background:var(--glass);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary)">
+            <input type="radio" name="payment" value="cod" checked> <i class="fas fa-truck" style="color:var(--neon-b)"></i> COD
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.855rem;cursor:pointer;padding:.4rem .7rem;background:var(--glass);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary)">
+            <input type="radio" name="payment" value="momo"> <i class="fas fa-wallet" style="color:#ae2070"></i> MoMo
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.855rem;cursor:pointer;padding:.4rem .7rem;background:var(--glass);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary)">
+            <input type="radio" name="payment" value="vnpay"> <i class="fas fa-credit-card" style="color:var(--neon-r)"></i> VNPay
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.855rem;cursor:pointer;padding:.4rem .7rem;background:var(--glass);border:1px solid var(--border);border-radius:8px;color:var(--text-secondary)">
+            <input type="radio" name="payment" value="bank_transfer"> <i class="fas fa-university" style="color:var(--neon-a)"></i> Chuyển khoản
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal fade" id="checkoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-800);border:1px solid var(--border-md);border-radius:24px">
+      <div style="background:var(--grad-main);padding:1.5rem;border-radius:24px 24px 0 0;color:#fff">
+        <h5 style="font-weight:800;margin:0"><i class="fas fa-map-marker-alt me-2"></i>Thông tin giao hàng</h5>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Họ và tên người nhận</label>
+          <input id="receiver-name" class="dk-input" placeholder="Nguyễn Văn A"/>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Số điện thoại</label>
+          <input id="receiver-phone" class="dk-input" placeholder="0901234567" type="tel"/>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Địa chỉ giao hàng</label>
+          <textarea id="shipping-address" class="dk-input" rows="3" placeholder="Số nhà, đường, phường/xã, quận/huyện..." style="resize:none"></textarea>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Ghi chú</label>
+          <input id="order-note" class="dk-input" placeholder="Giao buổi sáng..."/>
+        </div>
+        <div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:1rem">
+          <div class="dk-summary-row"><span>Tổng tiền hàng</span><span id="modal-subtotal"></span></div>
+          <div class="dk-summary-row"><span>Phí vận chuyển</span><span style="color:var(--neon-d)">30.000 ₫</span></div>
+          <div class="dk-summary-row total"><span>Tổng thanh toán</span><span class="price" id="modal-total"></span></div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-2">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:50px;background:var(--glass);border:1px solid var(--border);color:var(--text-primary);padding:.6rem 1.5rem;font-weight:600">Huỷ</button>
+        <button onclick="placeOrder()" class="dk-btn-primary" style="flex:1;border-radius:50px;justify-content:center">
+          <i class="fas fa-check-circle me-1"></i>Xác nhận đặt hàng
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal fade" id="successModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background:var(--bg-800);border:1px solid var(--border-md);border-radius:24px;overflow:hidden">
+      <div style="background:var(--grad-main);padding:2rem;text-align:center;color:#fff">
+        <div style="width:64px;height:64px;background:rgba(255,255,255,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+          <i class="fas fa-check" style="font-size:1.75rem"></i>
+        </div>
+        <h4 style="font-weight:800;margin:0">Đặt hàng thành công!</h4>
+      </div>
+      <div style="padding:1.75rem;text-align:center">
+        <p style="color:var(--text-secondary);margin-bottom:1.25rem">Đơn hàng đã được tiếp nhận. Chúng tôi sẽ liên hệ xác nhận sớm nhất!</p>
+        <div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1.25rem">
+          <div style="font-size:.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px">Mã đơn hàng</div>
+          <div id="order-id-display" style="font-size:1.4rem;font-weight:800;background:var(--grad-main);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:.25rem">#—</div>
+        </div>
+        <a href="products-dark.html" class="dk-btn-primary" style="text-decoration:none;border-radius:50px;display:inline-flex">
+          <i class="fas fa-store me-2"></i>Tiếp tục mua sắm
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="dk-footer"><div class="container"><div class="dk-footer-bottom" style="border-top:none;padding-top:0">© 2026 EcomAI Dark</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js?v=4"></script>
+<script src="js/products-data.js?v=4"></script>
+<script>
+let cartData = [];
+
+function renderCart() {
+  cartData = Cart.get();
+  const list  = document.getElementById('cart-items-list');
+  const empty = document.getElementById('cart-empty');
+  if (!cartData.length) { list.innerHTML = ''; empty.classList.remove('hidden'); updateSummary(); return; }
+  empty.classList.add('hidden');
+  list.innerHTML = cartData.map(item => `
+    <div class="dk-cart-item" id="item-${item.product_id}">
+      <div style="width:76px;height:76px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:2rem">
+        ${item.product_image ? `<img src="${item.product_image}" style="width:100%;height:100%;object-fit:cover">` : '📦'}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:.9rem;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.product_name}</div>
+        <div class="dk-price" style="font-size:1rem;margin:.2rem 0">${fmt.price(item.product_price)}</div>
+        <div style="font-size:.78rem;color:var(--text-muted)">Thành tiền: <strong style="color:var(--text-secondary)">${fmt.price(item.product_price * item.quantity)}</strong></div>
+      </div>
+      <div class="d-flex flex-column align-items-end gap-2">
+        <div class="d-flex align-items-center gap-2">
+          <button class="dk-qty-btn" onclick="changeQty(${item.product_id},${item.quantity-1})">−</button>
+          <span style="font-weight:700;color:var(--text-primary);min-width:20px;text-align:center">${item.quantity}</span>
+          <button class="dk-qty-btn" onclick="changeQty(${item.product_id},${item.quantity+1})">+</button>
+        </div>
+        <button onclick="removeItem(${item.product_id})" style="background:none;border:none;color:var(--neon-r);font-size:.78rem;cursor:pointer;font-weight:600">
+          <i class="fas fa-trash me-1"></i>Xóa
+        </button>
+      </div>
+    </div>`).join('');
+  updateSummary();
+}
+
+function changeQty(id, qty) {
+  if (qty < 1) { removeItem(id); return; }
+  Cart.updateQty(id, qty);
+  renderCart();
+}
+
+function removeItem(id) {
+  Cart.remove(id);
+  DkToast.show('Đã xóa sản phẩm.', 'warning');
+  renderCart();
+}
+
+function updateSummary() {
+  const sub = Cart.total(), ship = cartData.length ? 30000 : 0;
+  document.getElementById('item-count').textContent = Cart.count();
+  document.getElementById('subtotal').textContent   = fmt.price(sub);
+  document.getElementById('total-price').textContent= fmt.price(sub + ship);
+}
+
+function applyCoupon() {
+  if (document.getElementById('coupon-input').value.trim().toUpperCase() === 'SOAD2026') {
+    document.getElementById('discount-row').style.display = 'flex';
+    document.getElementById('discount-amount').textContent = '−50.000 ₫';
+    DkToast.show('Áp dụng mã giảm giá thành công!');
+  } else {
+    DkToast.show('Mã coupon không hợp lệ.', 'error');
+  }
+}
+
+function checkout() {
+  if (!cartData.length) { DkToast.show('Giỏ hàng trống!', 'warning'); return; }
+  const sub = Cart.total();
+  document.getElementById('modal-subtotal').textContent = fmt.price(sub);
+  document.getElementById('modal-total').textContent    = fmt.price(sub + 30000);
+  new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+}
+
+async function placeOrder() {
+  const address = document.getElementById('shipping-address').value.trim();
+  const note    = document.getElementById('order-note').value.trim();
+  if (!address) { DkToast.show('Vui lòng nhập địa chỉ giao hàng.', 'error'); return; }
+  let orderId = Math.floor(Math.random() * 9000) + 1000;
+  try {
+    const order = await API.createOrder(address, note);
+    if (order.id) { orderId = order.id; await API.pay(order.id, Cart.total() + 30000, document.querySelector('input[name=payment]:checked')?.value || 'cod'); }
+  } catch {}
+  Cart.clear();
+  bootstrap.Modal.getInstance(document.getElementById('checkoutModal')).hide();
+  document.getElementById('order-id-display').textContent = '#' + orderId;
+  new bootstrap.Modal(document.getElementById('successModal')).show();
+}
+
+const DkToast = {
+  show(msg, type='success') {
+    let wrap = document.querySelector('.dk-toast-wrap');
+    if (!wrap) { wrap = document.createElement('div'); wrap.className='dk-toast-wrap'; document.body.appendChild(wrap); }
+    const icons = {success:'✅',error:'❌',warning:'⚠️'};
+    const t = document.createElement('div');
+    t.className = `dk-toast ${type!=='success'?type:''}`;
+    t.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+    wrap.appendChild(t);
+    setTimeout(()=>{ t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300); },3000);
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  const area = document.getElementById('auth-area');
+  if (area && user) {
+    const av = (user.first_name||user.username||'U')[0].toUpperCase();
+    area.innerHTML = `<div class="d-flex align-items-center gap-2">
+      <div style="width:30px;height:30px;background:var(--grad-main);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem">${av}</div>
+      <button onclick="Auth.logout()" style="background:none;border:1px solid var(--border);border-radius:7px;padding:.25rem .65rem;font-size:.75rem;color:var(--text-muted);cursor:pointer">Đăng xuất</button>
+    </div>`;
+  } else if (area) {
+    area.innerHTML = `<a href="auth-dark.html" style="background:var(--grad-main);color:#fff;border-radius:9px;padding:.38rem .9rem;font-size:.82rem;font-weight:600;text-decoration:none">Đăng nhập</a>`;
+  }
+  renderCart();
+});
+</script>
+</body>
+</html>

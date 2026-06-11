@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng nhập — EcomAI Dark</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style-dark.css"/>
+</head>
+<body>
+
+<div class="dk-auth-page">
+  <!-- Decor circles -->
+  <div style="position:fixed;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.15) 0%,transparent 70%);top:-150px;right:-100px;pointer-events:none"></div>
+  <div style="position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(6,182,212,.12) 0%,transparent 70%);bottom:-100px;left:-80px;pointer-events:none"></div>
+
+  <div style="position:relative;z-index:1;width:100%;max-width:460px">
+    <!-- Logo -->
+    <div class="text-center mb-4">
+      <a href="index-dark.html" class="dk-brand" style="font-size:2rem;text-decoration:none">EcomAI</a>
+      <p style="color:var(--text-muted);margin-top:.35rem;font-size:.875rem">Mua sắm thông minh cùng AI</p>
+    </div>
+
+    <div class="dk-auth-card">
+      <!-- Tabs -->
+      <div class="dk-tab-wrap">
+        <button class="dk-tab-btn active" id="tab-login" onclick="switchTab('login')">Đăng nhập</button>
+        <button class="dk-tab-btn" id="tab-register" onclick="switchTab('register')">Đăng ký</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form id="login-form" onsubmit="doLogin(event)">
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Tên đăng nhập</label>
+          <div style="position:relative">
+            <i class="fas fa-user" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="login-username" class="dk-input" placeholder="username" style="padding-left:2.6rem" required autocomplete="username"/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Mật khẩu</label>
+          <div style="position:relative">
+            <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="login-password" class="dk-input" type="password" placeholder="••••••••" style="padding-left:2.6rem" required autocomplete="current-password"/>
+            <button type="button" onclick="togglePass('login-password',this)" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.835rem;color:var(--text-muted);cursor:pointer">
+            <input type="checkbox" style="accent-color:var(--neon-a)"> Nhớ đăng nhập
+          </label>
+          <a href="#" style="font-size:.835rem;color:var(--neon-b);text-decoration:none">Quên mật khẩu?</a>
+        </div>
+        <div id="login-error" class="hidden mb-3" style="background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);border-radius:10px;padding:.65rem 1rem;font-size:.855rem;color:var(--neon-r)">
+          <i class="fas fa-exclamation-circle me-1"></i><span id="login-error-msg"></span>
+        </div>
+        <button type="submit" id="login-btn" class="dk-btn-primary" style="width:100%;justify-content:center;border-radius:12px">
+          <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+        </button>
+      </form>
+
+      <!-- REGISTER -->
+      <form id="register-form" class="hidden" onsubmit="doRegister(event)">
+        <div class="row g-2 mb-0">
+          <div class="col-6 mb-3">
+            <label style="font-size:.835rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.35rem">Họ</label>
+            <input id="reg-lastname"  class="dk-input" placeholder="Nguyễn"/>
+          </div>
+          <div class="col-6 mb-3">
+            <label style="font-size:.835rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.35rem">Tên</label>
+            <input id="reg-firstname" class="dk-input" placeholder="Văn A"/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Tên đăng nhập <span style="color:var(--neon-r)">*</span></label>
+          <div style="position:relative">
+            <i class="fas fa-user" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="reg-username" class="dk-input" placeholder="username" style="padding-left:2.6rem" required autocomplete="username"/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Email</label>
+          <div style="position:relative">
+            <i class="fas fa-envelope" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="reg-email" class="dk-input" type="email" placeholder="email@example.com" style="padding-left:2.6rem"/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Mật khẩu <span style="color:var(--neon-r)">*</span></label>
+          <div style="position:relative">
+            <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="reg-password" class="dk-input" type="password" placeholder="Tối thiểu 8 ký tự" style="padding-left:2.6rem" required/>
+            <button type="button" onclick="togglePass('reg-password',this)" style="position:absolute;right:1rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label style="font-size:.855rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.4rem">Xác nhận mật khẩu <span style="color:var(--neon-r)">*</span></label>
+          <div style="position:relative">
+            <i class="fas fa-lock" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted)"></i>
+            <input id="reg-confirm" class="dk-input" type="password" placeholder="Nhập lại mật khẩu" style="padding-left:2.6rem" required/>
+          </div>
+        </div>
+        <div id="reg-error" class="hidden mb-3" style="background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);border-radius:10px;padding:.65rem 1rem;font-size:.855rem;color:var(--neon-r)">
+          <i class="fas fa-exclamation-circle me-1"></i><span id="reg-error-msg"></span>
+        </div>
+        <button type="submit" id="reg-btn" class="dk-btn-primary" style="width:100%;justify-content:center;border-radius:12px">
+          <i class="fas fa-user-plus me-2"></i>Tạo tài khoản
+        </button>
+        <p style="font-size:.78rem;color:var(--text-muted);text-align:center;margin-top:.75rem;margin-bottom:0">
+          Bằng cách đăng ký, bạn đồng ý với Điều khoản dịch vụ.
+        </p>
+      </form>
+
+      <!-- Divider -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin:1.25rem 0">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:.78rem;color:var(--text-muted)">hoặc</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <div class="d-flex gap-2">
+        <button onclick="DkToast.show('Demo: Chưa khả dụng.','warning')"
+          style="flex:1;background:var(--glass);border:1px solid var(--border);border-radius:10px;padding:.65rem;font-size:.875rem;font-weight:600;cursor:pointer;color:var(--text-secondary);font-family:inherit;transition:all .2s"
+          onmouseover="this.style.borderColor='var(--neon-a)';this.style.color='var(--text-primary)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+          <img src="https://www.google.com/favicon.ico" width="16" style="margin-right:.4rem"> Google
+        </button>
+        <button onclick="DkToast.show('Demo: Chưa khả dụng.','warning')"
+          style="flex:1;background:var(--glass);border:1px solid var(--border);border-radius:10px;padding:.65rem;font-size:.875rem;font-weight:600;cursor:pointer;color:var(--text-secondary);font-family:inherit;transition:all .2s"
+          onmouseover="this.style.borderColor='var(--neon-a)';this.style.color='var(--text-primary)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+          <span style="color:#1877f2;font-weight:900">f</span> Facebook
+        </button>
+      </div>
+    </div>
+
+    <p class="text-center mt-3">
+      <a href="index-dark.html" style="color:var(--text-muted);font-size:.855rem;text-decoration:none">
+        <i class="fas fa-arrow-left me-1"></i>Về trang chủ
+      </a>
+      &nbsp;&nbsp;
+      <a href="auth.html" style="color:var(--neon-b);font-size:.855rem;text-decoration:none">
+        <i class="fas fa-sun me-1"></i>Light version
+      </a>
+    </p>
+  </div>
+</div>
+
+<script src="js/api.js?v=4"></script>
+<script>
+const DkToast = {
+  show(msg, type='success') {
+    let wrap = document.querySelector('.dk-toast-wrap');
+    if (!wrap) { wrap = document.createElement('div'); wrap.className='dk-toast-wrap'; document.body.appendChild(wrap); }
+    const icons = {success:'✅',error:'❌',warning:'⚠️'};
+    const t = document.createElement('div');
+    t.className = `dk-toast ${type!=='success'?type:''}`;
+    t.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+    wrap.appendChild(t);
+    setTimeout(()=>{ t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300); },3000);
+  }
+};
+
+function switchTab(tab) {
+  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+function togglePass(id, btn) {
+  const input = document.getElementById(id);
+  const is    = input.type === 'password';
+  input.type  = is ? 'text' : 'password';
+  btn.querySelector('i').className = is ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+function setLoading(id, loading) {
+  const btn = document.getElementById(id);
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...'
+    : (id === 'login-btn' ? '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập' : '<i class="fas fa-user-plus me-2"></i>Tạo tài khoản');
+}
+
+function showError(prefix, msg) {
+  document.getElementById(`${prefix}-error`).classList.remove('hidden');
+  document.getElementById(`${prefix}-error-msg`).textContent = msg;
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  document.getElementById('login-error').classList.add('hidden');
+  setLoading('login-btn', true);
+  try {
+    const res = await API.login(
+      document.getElementById('login-username').value.trim(),
+      document.getElementById('login-password').value
+    );
+    if (res.access) {
+      Auth.save(res);
+      DkToast.show('Đăng nhập thành công! Chào ' + (res.user.first_name || res.user.username));
+      setTimeout(() => location.href = 'index-dark.html', 800);
+    } else {
+      showError('login', res.non_field_errors?.[0] || 'Sai tên đăng nhập hoặc mật khẩu.');
+    }
+  } catch {
+    showError('login', 'Không kết nối được server.');
+  }
+  setLoading('login-btn', false);
+}
+
+async function doRegister(e) {
+  e.preventDefault();
+  const pw  = document.getElementById('reg-password').value;
+  const pw2 = document.getElementById('reg-confirm').value;
+  document.getElementById('reg-error').classList.add('hidden');
+  if (pw !== pw2)   { showError('reg', 'Mật khẩu xác nhận không khớp.'); return; }
+  if (pw.length < 8){ showError('reg', 'Mật khẩu phải có ít nhất 8 ký tự.'); return; }
+  setLoading('reg-btn', true);
+  try {
+    const res = await API.register({
+      username:   document.getElementById('reg-username').value.trim(),
+      password:   pw, password_confirm: pw2,
+      email:      document.getElementById('reg-email').value,
+      first_name: document.getElementById('reg-firstname').value,
+      last_name:  document.getElementById('reg-lastname').value,
+      role: 'customer',
+    });
+    if (res.user) {
+      DkToast.show('Đăng ký thành công! Vui lòng đăng nhập.');
+      switchTab('login');
+    } else {
+      showError('reg', Object.values(res).flat()[0] || 'Đăng ký thất bại.');
+    }
+  } catch {
+    showError('reg', 'Không kết nối được server.');
+  }
+  setLoading('reg-btn', false);
+}
+
+if (Auth.isLoggedIn()) {
+  DkToast.show('Bạn đã đăng nhập rồi!', 'warning');
+  setTimeout(() => location.href = 'index-dark.html', 1000);
+}
+</script>
+</body>
+</html>

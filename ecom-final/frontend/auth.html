@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập — EcomAI</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: .75rem;
+      font-weight: 700;
+      font-size: .95rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--gray-400);
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(79,70,229,.3);
+    }
+    .social-btn {
+      width: 100%;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 12px;
+      padding: .65rem;
+      background: #fff;
+      font-weight: 600;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+      color: var(--gray-700);
+    }
+    .social-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .input-icon-wrap { position: relative; }
+    .input-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+    .input-icon-wrap .form-control-custom { padding-left: 2.6rem; }
+    .toggle-pass {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--gray-400); cursor: pointer;
+    }
+    .auth-bg-pattern {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background-image: radial-gradient(circle at 20% 80%, rgba(99,102,241,.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(245,158,11,.1) 0%, transparent 50%);
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-page" style="position:relative">
+  <div class="auth-bg-pattern"></div>
+
+  <div style="position:relative;z-index:1;width:100%;max-width:460px">
+
+    <!-- Logo -->
+    <div class="text-center mb-4">
+      <a href="index.html" style="font-size:2rem;font-weight:800;color:#fff;text-decoration:none">
+        Ecom<span style="color:#fbbf24">AI</span>
+      </a>
+      <p style="color:rgba(255,255,255,.7);margin-top:.3rem;font-size:.9rem">Mua sắm thông minh cùng AI</p>
+    </div>
+
+    <div class="auth-card">
+
+      <!-- Tabs -->
+      <div style="display:flex;background:var(--gray-100);border-radius:14px;padding:4px;margin-bottom:1.75rem">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Đăng nhập</button>
+        <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Đăng ký</button>
+      </div>
+
+      <!-- ─── LOGIN FORM ────────────────────────────── -->
+      <form id="login-form" onsubmit="doLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Tên đăng nhập</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input id="login-username" class="form-control-custom" placeholder="username" required autocomplete="username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input id="login-password" class="form-control-custom" type="password" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="toggle-pass" onclick="togglePass('login-password',this)"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;color:var(--gray-600);cursor:pointer">
+            <input type="checkbox" style="accent-color:var(--primary)"> Nhớ đăng nhập
+          </label>
+          <a href="#" style="font-size:.85rem;color:var(--primary);text-decoration:none">Quên mật khẩu?</a>
+        </div>
+        <div id="login-error" class="hidden" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.65rem 1rem;font-size:.875rem;color:var(--danger);margin-bottom:1rem">
+          <i class="fas fa-exclamation-circle me-1"></i><span id="login-error-msg"></span>
+        </div>
+        <button type="submit" class="btn-primary-custom" id="login-btn">
+          <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+        </button>
+      </form>
+
+      <!-- ─── REGISTER FORM ─────────────────────────── -->
+      <form id="register-form" class="hidden" onsubmit="doRegister(event)">
+        <div class="row g-2 mb-0">
+          <div class="col-6">
+            <div class="form-group">
+              <label class="form-label">Họ</label>
+              <input id="reg-lastname" class="form-control-custom" placeholder="Nguyễn" />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label class="form-label">Tên</label>
+              <input id="reg-firstname" class="form-control-custom" placeholder="Văn A" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tên đăng nhập <span style="color:var(--danger)">*</span></label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input id="reg-username" class="form-control-custom" placeholder="username" required autocomplete="username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input id="reg-email" class="form-control-custom" type="email" placeholder="email@example.com" autocomplete="email" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu <span style="color:var(--danger)">*</span></label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input id="reg-password" class="form-control-custom" type="password" placeholder="Tối thiểu 8 ký tự" required autocomplete="new-password" />
+            <button type="button" class="toggle-pass" onclick="togglePass('reg-password',this)"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Xác nhận mật khẩu <span style="color:var(--danger)">*</span></label>
+          <div class="input-icon-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input id="reg-confirm" class="form-control-custom" type="password" placeholder="Nhập lại mật khẩu" required />
+          </div>
+        </div>
+        <div id="reg-error" class="hidden" style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.65rem 1rem;font-size:.875rem;color:var(--danger);margin-bottom:1rem">
+          <i class="fas fa-exclamation-circle me-1"></i><span id="reg-error-msg"></span>
+        </div>
+        <button type="submit" class="btn-primary-custom" id="reg-btn">
+          <i class="fas fa-user-plus me-2"></i>Tạo tài khoản
+        </button>
+        <p style="font-size:.8rem;color:var(--gray-400);text-align:center;margin-top:.75rem;margin-bottom:0">
+          Bằng cách đăng ký, bạn đồng ý với Điều khoản dịch vụ của chúng tôi.
+        </p>
+      </form>
+
+      <!-- Social login divider -->
+      <div style="display:flex;align-items:center;gap:.75rem;margin:1.25rem 0">
+        <div style="flex:1;height:1px;background:var(--gray-200)"></div>
+        <span style="font-size:.8rem;color:var(--gray-400)">hoặc tiếp tục với</span>
+        <div style="flex:1;height:1px;background:var(--gray-200)"></div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="social-btn" onclick="Toast.show('Demo: Chức năng này chưa khả dụng.','info')">
+          <img src="https://www.google.com/favicon.ico" width="18"> Google
+        </button>
+        <button class="social-btn" onclick="Toast.show('Demo: Chức năng này chưa khả dụng.','info')">
+          <span style="color:#1877f2;font-weight:900;font-size:1.1rem">f</span> Facebook
+        </button>
+      </div>
+    </div>
+
+    <p class="text-center mt-3" style="color:rgba(255,255,255,.7);font-size:.85rem">
+      <a href="index.html" style="color:rgba(255,255,255,.8)"><i class="fas fa-arrow-left me-1"></i>Về trang chủ</a>
+    </p>
+  </div>
+</div>
+
+<script src="js/api.js?v=4"></script>
+<script>
+function switchTab(tab) {
+  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+}
+
+function togglePass(id, btn) {
+  const input = document.getElementById(id);
+  const isPass = input.type === 'password';
+  input.type   = isPass ? 'text' : 'password';
+  btn.querySelector('i').className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...'
+    : text;
+}
+
+function showError(prefix, msg) {
+  document.getElementById(`${prefix}-error`).classList.remove('hidden');
+  document.getElementById(`${prefix}-error-msg`).textContent = msg;
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  document.getElementById('login-error').classList.add('hidden');
+  setLoading('login-btn', true, '');
+
+  try {
+    const res = await API.login(username, password);
+    if (res.access) {
+      Auth.save(res);
+      Toast.show('Đăng nhập thành công! Chào ' + (res.user.first_name || res.user.username));
+      setTimeout(() => location.href = 'index.html', 800);
+    } else {
+      showError('login', res.non_field_errors?.[0] || res.detail || 'Sai tên đăng nhập hoặc mật khẩu.');
+      setLoading('login-btn', false, '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập');
+    }
+  } catch {
+    showError('login', 'Không kết nối được server. Hãy đảm bảo backend đang chạy.');
+    setLoading('login-btn', false, '<i class="fas fa-sign-in-alt me-2"></i>Đăng nhập');
+  }
+}
+
+async function doRegister(e) {
+  e.preventDefault();
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm  = document.getElementById('reg-confirm').value;
+  document.getElementById('reg-error').classList.add('hidden');
+
+  if (password !== confirm) { showError('reg', 'Mật khẩu xác nhận không khớp.'); return; }
+  if (password.length < 8)  { showError('reg', 'Mật khẩu phải có ít nhất 8 ký tự.'); return; }
+
+  setLoading('reg-btn', true, '');
+  try {
+    const res = await API.register({
+      username, password, password_confirm: confirm,
+      email:      document.getElementById('reg-email').value,
+      first_name: document.getElementById('reg-firstname').value,
+      last_name:  document.getElementById('reg-lastname').value,
+      role: 'customer',
+    });
+    if (res.user) {
+      Toast.show('Đăng ký thành công! Vui lòng đăng nhập.');
+      switchTab('login');
+      document.getElementById('login-username').value = username;
+    } else {
+      const errs = Object.values(res).flat();
+      showError('reg', errs[0] || 'Đăng ký thất bại. Thử tên đăng nhập khác.');
+    }
+  } catch {
+    showError('reg', 'Không kết nối được server. Hãy đảm bảo backend đang chạy.');
+  }
+  setLoading('reg-btn', false, '<i class="fas fa-user-plus me-2"></i>Tạo tài khoản');
+}
+
+// Auto-redirect if already logged in
+if (Auth.isLoggedIn()) {
+  Toast.show('Bạn đã đăng nhập rồi!', 'info');
+  setTimeout(() => location.href = 'index.html', 1000);
+}
+</script>
+</body>
+</html>

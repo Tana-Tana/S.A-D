@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcomAI Dark — Mua sắm thông minh</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style-dark.css"/>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="dk-navbar">
+  <div class="container d-flex align-items-center gap-3">
+    <a class="dk-brand" href="index-dark.html">EcomAI</a>
+    <div class="d-none d-md-flex gap-1 ms-2">
+      <a href="index-dark.html"    class="dk-nav-link active">Trang chủ</a>
+      <a href="products-dark.html" class="dk-nav-link">Sản phẩm</a>
+      <a href="cart-dark.html"     class="dk-nav-link">Giỏ hàng</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <input class="dk-search d-none d-md-block" id="nav-search" placeholder="🔍  Tìm sản phẩm..."/>
+      <div id="auth-area"></div>
+      <a href="cart-dark.html" class="dk-cart-btn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count hidden dk-badge">0</span>
+      </a>
+      <!-- Switch to light -->
+      <a href="index.html" title="Chuyển giao diện sáng"
+         style="color:var(--text-muted);font-size:.8rem;text-decoration:none;display:flex;align-items:center;gap:.3rem;border:1px solid var(--border);border-radius:8px;padding:.3rem .65rem;transition:all .2s"
+         onmouseover="this.style.borderColor='var(--neon-b)';this.style.color='var(--neon-b)'"
+         onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+        <i class="fas fa-sun"></i> Light
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="dk-hero">
+  <div class="container position-relative" style="z-index:1">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="dk-hero-tag">
+          <i class="fas fa-robot"></i> AI-Powered Shopping
+        </div>
+        <h1 class="dk-hero-title">
+          Mua sắm thông minh<br>cùng <span class="grad-text">trí tuệ nhân tạo</span>
+        </h1>
+        <p class="dk-hero-sub">
+          Hệ thống gợi ý sản phẩm cá nhân hóa + chatbot tư vấn 24/7 được xây dựng trên kiến trúc Microservices hiện đại.
+        </p>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="products-dark.html" class="dk-btn-primary">
+            <i class="fas fa-store"></i> Khám phá ngay
+          </a>
+          <button onclick="toggleChatbot()" class="dk-btn-outline">
+            <i class="fas fa-comments"></i> Chat với AI
+          </button>
+        </div>
+        <div style="position:relative;max-width:480px">
+          <input id="hero-search" class="dk-hero-search" placeholder="Tìm kiếm laptop, sách, thời trang..."/>
+          <button onclick="goSearch()"
+            style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                   background:var(--grad-main);border:none;color:#fff;border-radius:9px;
+                   padding:.42rem 1rem;font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem">
+            Tìm
+          </button>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center">
+        <!-- Floating card mockup -->
+        <div style="position:relative;width:340px;height:340px">
+          <div style="position:absolute;top:0;left:20px;width:200px;background:var(--glass-md);border:1px solid var(--border-md);border-radius:20px;padding:1.2rem;backdrop-filter:var(--blur-sm)">
+            <div style="font-size:2.5rem;margin-bottom:.5rem">💻</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem">Laptop ASUS ROG G15</div>
+            <div style="font-size:.9rem;font-weight:800;background:var(--grad-main);-webkit-background-clip:text;-webkit-text-fill-color:transparent">19.500.000 ₫</div>
+            <div style="margin-top:.5rem;font-size:.72rem;color:var(--neon-d)">★★★★★ 4.9 (312)</div>
+          </div>
+          <div style="position:absolute;bottom:0;right:20px;width:200px;background:var(--glass-md);border:1px solid var(--border-md);border-radius:20px;padding:1.2rem;backdrop-filter:var(--blur-sm)">
+            <div style="font-size:2.5rem;margin-bottom:.5rem">📚</div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--text-primary);margin-bottom:.25rem">Atomic Habits</div>
+            <div style="font-size:.9rem;font-weight:800;background:var(--grad-cool);-webkit-background-clip:text;-webkit-text-fill-color:transparent">168.000 ₫</div>
+            <div style="margin-top:.5rem;font-size:.72rem;color:var(--neon-d)">★★★★★ 4.9 (3240)</div>
+          </div>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+                      width:60px;height:60px;background:var(--grad-main);border-radius:50%;
+                      display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+                      box-shadow:var(--glow-a)">🤖</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="dk-stats">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-6 col-md-3 dk-stat-item">
+        <div class="dk-stat-num">17+</div>
+        <div class="dk-stat-label">Sản phẩm</div>
+      </div>
+      <div class="col-6 col-md-3 dk-stat-item">
+        <div class="dk-stat-num">50K+</div>
+        <div class="dk-stat-label">Khách hàng</div>
+      </div>
+      <div class="col-6 col-md-3 dk-stat-item">
+        <div class="dk-stat-num">99.9%</div>
+        <div class="dk-stat-label">Uptime</div>
+      </div>
+      <div class="col-6 col-md-3 dk-stat-item">
+        <div class="dk-stat-num">AI</div>
+        <div class="dk-stat-label">Powered</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="py-4" style="border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="products-dark.html"              class="dk-chip active"><span>🛍️</span> Tất cả</a>
+      <a href="products-dark.html?type=electronics" class="dk-chip"><span>💻</span> Điện tử</a>
+      <a href="products-dark.html?type=book"        class="dk-chip"><span>📚</span> Sách</a>
+      <a href="products-dark.html?type=fashion"     class="dk-chip"><span>👗</span> Thời trang</a>
+      <a href="products-dark.html?type=food"        class="dk-chip"><span>🍜</span> Thực phẩm</a>
+      <a href="products-dark.html?type=sports"      class="dk-chip"><span>⚽</span> Thể thao</a>
+    </div>
+  </div>
+</section>
+
+<!-- AI RECOMMENDATIONS -->
+<section class="py-5">
+  <div class="container">
+    <div class="dk-ai-banner">
+      <div class="position-relative" style="z-index:1">
+        <div class="dk-ai-tag"><i class="fas fa-robot me-1"></i> Dành riêng cho bạn — AI</div>
+        <h2 style="font-size:1.5rem;font-weight:800;margin:.4rem 0">Gợi ý sản phẩm thông minh</h2>
+        <p style="color:var(--text-muted);font-size:.875rem;margin-bottom:1.25rem">LSTM + RAG phân tích hành vi để đề xuất sản phẩm phù hợp nhất.</p>
+        <div id="ai-products" class="row g-3">
+          <div class="col-6 col-md-4 col-lg-2"><div class="dk-skeleton" style="height:180px"></div></div>
+          <div class="col-6 col-md-4 col-lg-2"><div class="dk-skeleton" style="height:180px"></div></div>
+          <div class="col-6 col-md-4 col-lg-2 d-none d-md-block"><div class="dk-skeleton" style="height:180px"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="dk-section-title mb-1">Sản phẩm <span class="grad-text">nổi bật</span></h2>
+        <p class="dk-section-sub mb-0">Được yêu thích nhất tuần này</p>
+      </div>
+      <a href="products-dark.html" class="dk-btn-primary" style="padding:.5rem 1.2rem;font-size:.875rem">
+        Xem tất cả <i class="fas fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div id="featured-products" class="row g-4">
+      <div class="col-6 col-md-4 col-lg-3"><div class="dk-skeleton" style="height:340px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3"><div class="dk-skeleton" style="height:340px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3 d-none d-md-block"><div class="dk-skeleton" style="height:340px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3 d-none d-lg-block"><div class="dk-skeleton" style="height:340px"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="py-5" style="background:var(--glass);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="dk-section-title">Vì sao chọn <span class="grad-text">EcomAI?</span></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3 text-center">
+        <div style="width:56px;height:56px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.5rem">🤖</div>
+        <h5 style="font-weight:700;color:var(--text-primary)">AI Recommendation</h5>
+        <p style="color:var(--text-muted);font-size:.855rem">LSTM + RAG gợi ý cá nhân hóa theo hành vi</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="width:56px;height:56px;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.5rem">⚡</div>
+        <h5 style="font-weight:700;color:var(--text-primary)">Siêu nhanh</h5>
+        <p style="color:var(--text-muted);font-size:.855rem">Microservices đảm bảo response dưới 200ms</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="width:56px;height:56px;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.5rem">🔒</div>
+        <h5 style="font-weight:700;color:var(--text-primary)">Bảo mật cao</h5>
+        <p style="color:var(--text-muted);font-size:.855rem">JWT Authentication + RBAC 3 cấp</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="width:56px;height:56px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.5rem">💬</div>
+        <h5 style="font-weight:700;color:var(--text-primary)">Chatbot 24/7</h5>
+        <p style="color:var(--text-muted);font-size:.855rem">RAG pipeline tư vấn tiếng Việt tự nhiên</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="dk-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="dk-footer-brand">EcomAI</div>
+        <p style="color:var(--text-muted);font-size:.855rem;margin-top:.5rem;line-height:1.7">
+          Nền tảng mua sắm thông minh — Microservices + AI. Tiểu luận môn Kiến trúc & Thiết kế Phần mềm.
+        </p>
+      </div>
+      <div class="col-md-2">
+        <div style="font-weight:700;color:var(--text-primary);font-size:.875rem;margin-bottom:.85rem">Sản phẩm</div>
+        <a href="products-dark.html?type=electronics" class="dk-footer-link">Điện tử</a>
+        <a href="products-dark.html?type=book"        class="dk-footer-link">Sách</a>
+        <a href="products-dark.html?type=fashion"     class="dk-footer-link">Thời trang</a>
+      </div>
+      <div class="col-md-3">
+        <div style="font-weight:700;color:var(--text-primary);font-size:.875rem;margin-bottom:.85rem">Tech Stack</div>
+        <a href="#" class="dk-footer-link">Django REST Framework</a>
+        <a href="#" class="dk-footer-link">FastAPI + NumPy</a>
+        <a href="#" class="dk-footer-link">Docker + Nginx</a>
+      </div>
+      <div class="col-md-3">
+        <div style="font-weight:700;color:var(--text-primary);font-size:.875rem;margin-bottom:.85rem">Giao diện</div>
+        <a href="index.html"      class="dk-footer-link"><i class="fas fa-sun me-1"></i> Light (mặc định)</a>
+        <a href="index-dark.html" class="dk-footer-link" style="color:var(--neon-b)"><i class="fas fa-moon me-1"></i> Dark (hiện tại)</a>
+      </div>
+    </div>
+    <div class="dk-footer-bottom">© 2026 EcomAI — Tiểu luận SoAD · GVHD: Trần Đình Quế</div>
+  </div>
+</footer>
+
+<!-- CHATBOT -->
+<button class="dk-chatbot-fab" onclick="toggleChatbot()">
+  <i class="fas fa-robot" id="chatbot-icon"></i>
+</button>
+
+<div class="dk-chatbot-panel hidden" id="chatbot-panel">
+  <div class="dk-chatbot-header">
+    <div class="dk-chatbot-avatar">🤖</div>
+    <div>
+      <div class="dk-chatbot-name">EcomAI Assistant</div>
+      <div class="dk-chatbot-status">● LSTM + RAG — Online</div>
+    </div>
+    <button class="dk-chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="dk-chatbot-msgs" id="chatbot-messages"></div>
+  <div class="dk-chatbot-input-area">
+    <input id="chatbot-input" class="dk-chatbot-input" placeholder="Hỏi về sản phẩm..."
+           onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="dk-chatbot-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<script src="js/api.js?v=4"></script>
+<script src="js/products-data.js?v=4"></script>
+<script src="js/chatbot.js?v=4"></script>
+<script>
+// Override chatbot styles to match dark theme
+document.addEventListener('DOMContentLoaded', () => {
+  // Patch chatbot.js to use dark classes
+  const origAppendText = Chatbot._appendText.bind(Chatbot);
+  Chatbot._appendText = function(text, role) {
+    const box = document.getElementById('chatbot-messages');
+    const el  = document.createElement('div');
+    el.className = `dk-msg ${role}`;
+    el.textContent = text;
+    box.appendChild(el);
+    this._scrollBottom();
+    return el;
+  };
+});
+
+function buildCard(p) {
+  const v   = getVisual(p.product_type);
+  const img = p.image_url || getTypeImage(p.product_type, p.id);
+  return `
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="dk-card" onclick="location.href='product-detail.html?id=${p.id}'">
+      <div class="dk-card-img" style="background:${v.gradient}">
+        <img src="${img}" alt="${p.name}" loading="lazy"
+          onerror="this.style.display='none'">
+        ${p.discount_percent > 0
+          ? `<span class="dk-card-badge">-${p.discount_percent}%</span>`
+          : '<span class="dk-card-badge new">Mới</span>'}
+        <button class="dk-card-wish" onclick="event.stopPropagation()"><i class="far fa-heart"></i></button>
+      </div>
+      <div class="dk-card-body">
+        <div class="dk-card-type">${v.icon} ${fmt.typeLabel(p.product_type)}</div>
+        <div class="dk-card-name">${p.name}</div>
+        <div class="d-flex align-items-center gap-2 mb-auto">
+          <span class="dk-card-stars">${fmt.stars(p.rating||4)}</span>
+          <span class="dk-card-sold">(${p.sold_count||0})</span>
+        </div>
+        <div class="dk-card-footer">
+          <div>
+            <div class="dk-price">${fmt.price(p.price)}</div>
+            ${p.original_price ? `<div class="dk-price-old">${fmt.price(p.original_price)}</div>` : ''}
+          </div>
+          <button class="dk-add-btn" onclick="event.stopPropagation();addCart(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <i class="fas fa-plus"></i> Thêm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addCart(p) { Cart.add(p); Toast.show(`Đã thêm <strong>${p.name}</strong> vào giỏ!`); }
+
+async function loadFeatured() {
+  const el = document.getElementById('featured-products');
+  try {
+    const data = await API.getProducts({ ordering: '-sold_count', page_size: 8 });
+    const list = data.results || data || [];
+    el.innerHTML = (list.length ? list : MOCK_PRODUCTS).slice(0,8).map(buildCard).join('');
+  } catch {
+    el.innerHTML = MOCK_PRODUCTS.slice(0,8).map(buildCard).join('');
+  }
+}
+
+async function loadAIRecommend() {
+  const el = document.getElementById('ai-products');
+  const render = p => {
+    const v   = getVisual(p.product_type || p.type || 'other');
+    const pid = p.id || p.product_id || 1;
+    const img = p.image_url || getTypeImage(p.product_type || p.type || 'other', pid);
+    return `<div class="col-6 col-md-4 col-lg-2">
+      <div class="dk-ai-card" onclick="location.href='product-detail.html?id=${pid}'">
+        <div class="dk-ai-img" style="background:${v.gradient}">
+          <img src="${img}" alt="${p.name||''}" onerror="this.style.display='none'">
+        </div>
+        <div class="dk-ai-info">
+          <div class="dk-ai-name">${p.name||'Sản phẩm'}</div>
+          <div class="dk-ai-price">${fmt.price(p.price||0)}</div>
+          <button class="dk-ai-add" onclick="event.stopPropagation();Cart.add({id:${pid},name:${JSON.stringify(p.name||'')},price:${p.price||0},product_type:'${p.product_type||'other'}',image_url:'${img}'});Toast.show('Đã thêm!')">+ Giỏ</button>
+        </div>
+      </div>
+    </div>`;
+  };
+  try {
+    const data = await API.recommend();
+    const list = data.recommendations || [];
+    el.innerHTML = (list.length ? list : MOCK_PRODUCTS).slice(0,6).map(render).join('');
+  } catch {
+    el.innerHTML = MOCK_PRODUCTS.slice(0,6).map(render).join('');
+  }
+}
+
+function goSearch() {
+  const q = document.getElementById('hero-search').value.trim();
+  if (q) location.href = `products-dark.html?q=${encodeURIComponent(q)}`;
+}
+document.getElementById('hero-search').addEventListener('keydown', e => { if (e.key==='Enter') goSearch(); });
+document.getElementById('nav-search').addEventListener('keydown', e => {
+  if (e.key==='Enter' && e.target.value.trim())
+    location.href = `products-dark.html?q=${encodeURIComponent(e.target.value.trim())}`;
+});
+
+// Override auth-area styles for dark
+const origDom = document.addEventListener;
+window.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  const area = document.getElementById('auth-area');
+  if (area) {
+    if (user) {
+      const av = (user.first_name||user.username||'U')[0].toUpperCase();
+      area.innerHTML = `<div class="d-flex align-items-center gap-2">
+        <div style="width:30px;height:30px;background:var(--grad-main);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem">${av}</div>
+        <span style="font-size:.82rem;font-weight:600;color:var(--text-secondary)">${user.first_name||user.username}</span>
+        <button onclick="Auth.logout()" style="background:none;border:1px solid var(--border);border-radius:7px;padding:.25rem .65rem;font-size:.75rem;font-weight:600;color:var(--text-muted);cursor:pointer">Đăng xuất</button>
+      </div>`;
+    } else {
+      area.innerHTML = `<a href="auth-dark.html" style="background:var(--grad-main);color:#fff;border-radius:9px;padding:.38rem .9rem;font-size:.82rem;font-weight:600;text-decoration:none">Đăng nhập</a>`;
+    }
+  }
+});
+
+// Override Toast for dark
+const DkToast = {
+  show(msg, type='success') {
+    let wrap = document.querySelector('.dk-toast-wrap');
+    if (!wrap) { wrap = document.createElement('div'); wrap.className='dk-toast-wrap'; document.body.appendChild(wrap); }
+    const icons = {success:'✅',error:'❌',warning:'⚠️'};
+    const t = document.createElement('div');
+    t.className = `dk-toast ${type!=='success'?type:''}`;
+    t.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+    wrap.appendChild(t);
+    setTimeout(()=>{ t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300); },3000);
+  }
+};
+// Override global Toast
+Object.assign(Toast, DkToast);
+
+loadFeatured();
+loadAIRecommend();
+</script>
+</body>
+</html>

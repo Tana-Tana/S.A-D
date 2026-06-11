@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcomAI — Mua sắm thông minh</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ─── NAVBAR ─────────────────────────────────── -->
+<nav class="navbar-custom">
+  <div class="container d-flex align-items-center gap-3">
+    <a class="navbar-brand" href="index.html">Ecom<span>AI</span></a>
+    <div class="d-none d-md-flex gap-1 ms-2">
+      <a href="index.html"    class="nav-link active">Trang chủ</a>
+      <a href="products.html" class="nav-link">Sản phẩm</a>
+      <a href="cart.html"     class="nav-link">Giỏ hàng</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <a href="index-dark.html" title="Chuyển giao diện tối"
+         style="color:var(--gray-400);font-size:.8rem;text-decoration:none;display:flex;align-items:center;gap:.3rem;border:1.5px solid var(--gray-200);border-radius:8px;padding:.3rem .65rem;transition:all .2s"
+         onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'"
+         onmouseout="this.style.borderColor='var(--gray-200)';this.style.color='var(--gray-400)'">
+        <i class="fas fa-moon"></i> Dark
+      </a>
+      <div class="position-relative d-none d-md-block">
+        <input id="nav-search" class="search-bar" placeholder="🔍  Tìm sản phẩm..." />
+      </div>
+      <div id="auth-area"></div>
+      <a href="cart.html" class="cart-btn">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Giỏ hàng</span>
+        <span class="cart-badge cart-count hidden">0</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────── -->
+<section class="hero">
+  <div class="container position-relative" style="z-index:1">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="ai-tag mb-3"><i class="fas fa-robot me-1"></i> AI-Powered Shopping</div>
+        <h1 class="hero-title mb-3">
+          Mua sắm thông minh<br>cùng <span class="highlight">trí tuệ nhân tạo</span>
+        </h1>
+        <p class="hero-subtitle mb-4">
+          Hệ thống gợi ý sản phẩm cá nhân hóa + chatbot tư vấn 24/7 được xây dựng trên kiến trúc Microservices hiện đại.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="products.html" class="btn-hero">
+            <i class="fas fa-store"></i> Khám phá ngay
+          </a>
+          <button onclick="toggleChatbot()" class="btn-hero-outline">
+            <i class="fas fa-comments"></i> Chat với AI
+          </button>
+        </div>
+        <!-- Hero search -->
+        <div class="mt-4 position-relative" style="max-width:460px">
+          <input id="hero-search" class="hero-search" placeholder="Tìm kiếm laptop, áo thun, sách..." />
+          <button onclick="goSearch()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--accent);border:none;color:#1a1a2e;border-radius:50px;padding:.4rem 1rem;font-weight:700;cursor:pointer">Tìm</button>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-flex justify-content-end">
+        <div style="font-size:14rem;line-height:1;filter:drop-shadow(0 20px 60px rgba(0,0,0,.3))">🛍️</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS ─────────────────────────────────────── -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-6 col-md-3 stat-item">
+        <div class="stat-number">10K+</div>
+        <div class="stat-label">Sản phẩm</div>
+      </div>
+      <div class="col-6 col-md-3 stat-item">
+        <div class="stat-number">50K+</div>
+        <div class="stat-label">Khách hàng</div>
+      </div>
+      <div class="col-6 col-md-3 stat-item">
+        <div class="stat-number">99.9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+      <div class="col-6 col-md-3 stat-item">
+        <div class="stat-number">AI</div>
+        <div class="stat-label">Powered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CATEGORIES ────────────────────────────────── -->
+<section class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="products.html" class="category-chip active"><span>🛍️</span> Tất cả</a>
+      <a href="products.html?type=electronics" class="category-chip"><span>💻</span> Điện tử</a>
+      <a href="products.html?type=book"        class="category-chip"><span>📚</span> Sách</a>
+      <a href="products.html?type=fashion"     class="category-chip"><span>👗</span> Thời trang</a>
+      <a href="products.html?type=food"        class="category-chip"><span>🍜</span> Thực phẩm</a>
+      <a href="products.html?type=sports"      class="category-chip"><span>⚽</span> Thể thao</a>
+      <a href="products.html?type=beauty"      class="category-chip"><span>💄</span> Làm đẹp</a>
+      <a href="products.html?type=furniture"   class="category-chip"><span>🛋️</span> Nội thất</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── AI RECOMMENDATION BANNER ──────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="ai-banner">
+      <div class="ai-tag">✨ Dành riêng cho bạn</div>
+      <h2 style="font-size:1.6rem;font-weight:800;margin:.5rem 0">Gợi ý sản phẩm từ AI</h2>
+      <p style="opacity:.8;max-width:500px;font-size:.95rem">Hệ thống LSTM + RAG phân tích hành vi của bạn để đề xuất sản phẩm phù hợp nhất.</p>
+      <div id="ai-products" class="row g-3 mt-3">
+        <!-- Skeleton loading -->
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="skeleton" style="height:160px;border-radius:12px"></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="skeleton" style="height:160px;border-radius:12px"></div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="skeleton" style="height:160px;border-radius:12px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURED PRODUCTS ─────────────────────────── -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="section-title mb-1">Sản phẩm <span>nổi bật</span></h2>
+        <p class="section-subtitle mb-0">Được yêu thích nhất tuần này</p>
+      </div>
+      <a href="products.html" class="btn-hero" style="font-size:.9rem;padding:.55rem 1.3rem">
+        Xem tất cả <i class="fas fa-arrow-right ms-1"></i>
+      </a>
+    </div>
+    <div id="featured-products" class="row g-4">
+      <!-- Product cards inserted by JS -->
+      <div class="col-6 col-md-4 col-lg-3"><div class="skeleton" style="height:340px;border-radius:20px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3"><div class="skeleton" style="height:340px;border-radius:20px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3 d-none d-md-block"><div class="skeleton" style="height:340px;border-radius:20px"></div></div>
+      <div class="col-6 col-md-4 col-lg-3 d-none d-lg-block"><div class="skeleton" style="height:340px;border-radius:20px"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WHY US ─────────────────────────────────────── -->
+<section class="py-5" style="background:#fff">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Vì sao chọn <span>EcomAI?</span></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3 text-center">
+        <div style="font-size:3rem;margin-bottom:.75rem">🤖</div>
+        <h5 class="fw-700">AI Recommendation</h5>
+        <p class="text-muted small">LSTM + RAG gợi ý sản phẩm cá nhân hóa theo hành vi của bạn</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="font-size:3rem;margin-bottom:.75rem">⚡</div>
+        <h5 class="fw-700">Siêu nhanh</h5>
+        <p class="text-muted small">Kiến trúc Microservices đảm bảo phản hồi dưới 200ms</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="font-size:3rem;margin-bottom:.75rem">🔒</div>
+        <h5 class="fw-700">Bảo mật cao</h5>
+        <p class="text-muted small">JWT Authentication + RBAC bảo vệ toàn bộ dữ liệu</p>
+      </div>
+      <div class="col-md-3 text-center">
+        <div style="font-size:3rem;margin-bottom:.75rem">💬</div>
+        <h5 class="fw-700">Chatbot 24/7</h5>
+        <p class="text-muted small">Tư vấn mua sắm thông minh bằng RAG Pipeline tiếng Việt</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="footer-brand">Ecom<span>AI</span></div>
+        <p class="footer-desc">Nền tảng mua sắm thông minh được xây dựng trên Microservices + AI. Tiểu luận môn Kiến trúc & Thiết kế Phần mềm.</p>
+      </div>
+      <div class="col-md-2">
+        <div class="footer-heading">Sản phẩm</div>
+        <a href="products.html?type=electronics" class="footer-link">Điện tử</a>
+        <a href="products.html?type=book"        class="footer-link">Sách</a>
+        <a href="products.html?type=fashion"     class="footer-link">Thời trang</a>
+      </div>
+      <div class="col-md-3">
+        <div class="footer-heading">Hỗ trợ</div>
+        <a href="#" class="footer-link">Chính sách đổi trả</a>
+        <a href="#" class="footer-link">Hướng dẫn mua hàng</a>
+        <a href="#" class="footer-link">Liên hệ</a>
+      </div>
+      <div class="col-md-3">
+        <div class="footer-heading">Tech Stack</div>
+        <a href="#" class="footer-link">Django REST Framework</a>
+        <a href="#" class="footer-link">FastAPI + PyTorch</a>
+        <a href="#" class="footer-link">Docker + Nginx</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span style="opacity:.5">© 2026 EcomAI — Tiểu luận SoAD · GVHD: Trần Đình Quế</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── CHATBOT WIDGET ─────────────────────────────── -->
+<button class="chatbot-fab" onclick="toggleChatbot()" title="Chat với AI">
+  <i class="fas fa-robot" id="chatbot-icon"></i>
+</button>
+
+<div class="chatbot-panel hidden" id="chatbot-panel">
+  <div class="chatbot-header">
+    <div class="chatbot-avatar">🤖</div>
+    <div>
+      <div class="chatbot-name">EcomAI Assistant</div>
+      <div class="chatbot-status">● Trực tuyến — LSTM + RAG</div>
+    </div>
+    <button class="chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chatbot-messages" id="chatbot-messages"></div>
+  <div class="chatbot-input-area">
+    <input id="chatbot-input" class="chatbot-input" placeholder="Nhập câu hỏi..." onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="chatbot-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<!-- ─── SCRIPTS ────────────────────────────────────── -->
+<script src="js/api.js?v=4"></script>
+<script src="js/products-data.js?v=4"></script>
+<script src="js/chatbot.js?v=4"></script>
+<script>
+// (chatbot handled by chatbot.js)
+
+// Load featured products
+function buildCard(p) {
+  const v     = getVisual(p.product_type);
+  const label = fmt.typeLabel(p.product_type);
+  // Luôn có ảnh: dùng image_url từ backend, hoặc fallback về Unsplash theo type
+  const imgUrl = p.image_url || getTypeImage(p.product_type, p.id);
+  return `
+  <div class="col-6 col-md-4 col-lg-3">
+    <div class="product-card" onclick="API.logEvent(${p.id},'click');location.href='product-detail.html?id=${p.id}'" style="cursor:pointer">
+      <div class="product-img-wrap" style="background:${v.gradient};overflow:hidden">
+        <img src="${imgUrl}" alt="${p.name}" loading="lazy"
+          style="width:100%;height:220px;object-fit:cover;transition:transform .4s ease"
+          onerror="this.style.display='none'">
+        ${p.discount_percent > 0 ? `<span class="product-badge">-${p.discount_percent}%</span>` : '<span class="product-badge new">Mới</span>'}
+        <button class="product-wishlist" onclick="event.stopPropagation()"><i class="far fa-heart"></i></button>
+      </div>
+      <div class="product-body">
+        <div class="product-type">${v.icon} ${label}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-rating">
+          <span class="stars">${fmt.stars(p.rating || 4)}</span>
+          <span class="rating-count">(${p.sold_count || 0})</span>
+        </div>
+        <div class="product-price-row">
+          <div>
+            <div class="product-price">${fmt.price(p.price)}</div>
+            ${p.original_price ? `<div class="product-price-old">${fmt.price(p.original_price)}</div>` : ''}
+          </div>
+          <button class="btn-add-cart" onclick="event.stopPropagation();addCart(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+            <i class="fas fa-plus"></i> Thêm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function addCart(product) {
+  Cart.add(product);
+  Toast.show(`Đã thêm <strong>${product.name}</strong> vào giỏ hàng!`);
+}
+
+async function loadFeatured() {
+  const el = document.getElementById('featured-products');
+  try {
+    const data     = await API.getProducts({ ordering: '-sold_count', page_size: 8 });
+    const products = data.results || data || [];
+    el.innerHTML   = products.length
+      ? products.slice(0,8).map(buildCard).join('')
+      : MOCK_PRODUCTS.slice(0,8).map(buildCard).join('');
+  } catch {
+    // Luôn hiển thị mock data khi API lỗi
+    el.innerHTML = MOCK_PRODUCTS.slice(0,8).map(buildCard).join('');
+  }
+}
+
+async function loadAIRecommend() {
+  const el = document.getElementById('ai-products');
+  const renderAICard = p => {
+    const v    = getVisual(p.product_type || p.type || 'other');
+    const pid  = p.id || p.product_id || 1;
+    const type = p.product_type || p.type || 'other';
+    const img  = p.image_url || getTypeImage(type, pid);
+    return `<div class="col-6 col-md-4 col-lg-2">
+      <div style="border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .25s;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)"
+           onclick="API.logEvent(${pid},'click');location.href='product-detail.html?id=${pid}'"
+           onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.3)'"
+           onmouseout="this.style.transform='none';this.style.boxShadow='none'">
+        <div style="height:110px;overflow:hidden;background:${v.gradient};display:flex;align-items:center;justify-content:center">
+          <img src="${img}" style="width:100%;height:100%;object-fit:cover"
+            onerror="this.style.display='none';this.parentElement.innerHTML='<span style=font-size:3rem>${v.icon}</span>'">
+        </div>
+        <div style="padding:.65rem .75rem">
+          <div style="font-size:.75rem;font-weight:600;opacity:.9;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.3rem">${p.name||'Sản phẩm'}</div>
+          <div style="font-size:.8rem;font-weight:800;color:#fbbf24">${fmt.price(p.price||0)}</div>
+          <button onclick="event.stopPropagation();Cart.add({id:${pid},name:${JSON.stringify(p.name||'')},price:${p.price||0},product_type:'${type}',image_url:'${img}'});Toast.show('Đã thêm!')"
+            style="margin-top:.4rem;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:.25rem;font-size:.7rem;font-weight:600;cursor:pointer;width:100%">🛒 Thêm giỏ</button>
+        </div>
+      </div>
+    </div>`;
+  };
+  try {
+    const data     = await API.recommend();
+    const products = data.recommendations || [];
+    el.innerHTML   = products.length
+      ? products.slice(0,6).map(renderAICard).join('')
+      : MOCK_PRODUCTS.slice(0,6).map(renderAICard).join('');
+  } catch {
+    el.innerHTML = MOCK_PRODUCTS.slice(0,6).map(renderAICard).join('');
+  }
+}
+
+function goSearch() {
+  const q = document.getElementById('hero-search').value.trim();
+  if (q) location.href = `products.html?q=${encodeURIComponent(q)}`;
+}
+
+document.getElementById('hero-search').addEventListener('keydown', e => { if (e.key === 'Enter') goSearch(); });
+document.getElementById('nav-search').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim();
+    if (q) location.href = `products.html?q=${encodeURIComponent(q)}`;
+  }
+});
+
+// Init
+loadFeatured();
+loadAIRecommend();
+</script>
+</body>
+</html>

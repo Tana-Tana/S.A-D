@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chi tiết sản phẩm — EcomAI Dark</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style-dark.css"/>
+  <style>
+    .dk-img-main {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--border);
+      background: var(--glass);
+    }
+    .dk-spec-row {
+      display: flex; padding: .6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .875rem;
+    }
+    .dk-spec-label { width: 140px; color: var(--text-muted); flex-shrink: 0; }
+    .dk-spec-value { font-weight: 600; color: var(--text-primary); }
+    .dk-tab-nav    { display: flex; border-bottom: 1px solid var(--border); gap: 0; margin-bottom: 1.5rem; }
+    .dk-tab-nav-btn {
+      border: none; background: none; padding: .7rem 1.4rem;
+      font-weight: 600; font-size: .875rem; color: var(--text-muted);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: all .2s; font-family: inherit;
+    }
+    .dk-tab-nav-btn.active { color: var(--neon-a); border-bottom-color: var(--neon-a); }
+    .dk-review-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: .75rem;
+      backdrop-filter: var(--blur-sm);
+    }
+    .dk-qty-big-btn {
+      width: 38px; height: 38px;
+      background: var(--glass-md); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text-primary); font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all .2s; font-family: inherit;
+    }
+    .dk-qty-big-btn:hover { border-color: var(--neon-a); color: var(--neon-a); }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="dk-navbar">
+  <div class="container d-flex align-items-center gap-3">
+    <a class="dk-brand" href="index-dark.html">EcomAI</a>
+    <div class="d-none d-md-flex gap-1 ms-2">
+      <a href="index-dark.html"    class="dk-nav-link">Trang chủ</a>
+      <a href="products-dark.html" class="dk-nav-link">Sản phẩm</a>
+      <a href="cart-dark.html"     class="dk-nav-link">Giỏ hàng</a>
+    </div>
+    <div class="ms-auto d-flex align-items-center gap-3">
+      <div id="auth-area"></div>
+      <a href="cart-dark.html" class="dk-cart-btn">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count hidden dk-badge">0</span>
+      </a>
+      <a href="product-detail.html" style="color:var(--text-muted);font-size:.8rem;text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:.3rem .65rem">
+        <i class="fas fa-sun"></i> Light
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- BREADCRUMB -->
+<div style="background:var(--glass);border-bottom:1px solid var(--border);padding:.75rem 0;backdrop-filter:var(--blur-sm)">
+  <div class="container" style="font-size:.855rem;color:var(--text-muted)">
+    <a href="index-dark.html" style="color:var(--text-muted);text-decoration:none">Trang chủ</a>
+    <span class="mx-2">/</span>
+    <a href="products-dark.html" style="color:var(--text-muted);text-decoration:none">Sản phẩm</a>
+    <span class="mx-2">/</span>
+    <span id="breadcrumb-name" style="color:var(--text-primary)">Chi tiết</span>
+  </div>
+</div>
+
+<div class="container py-5">
+
+  <!-- LOADING -->
+  <div id="loading-state" class="row g-4">
+    <div class="col-md-5"><div class="dk-skeleton" style="aspect-ratio:1;border-radius:20px"></div></div>
+    <div class="col-md-7">
+      <div class="dk-skeleton mb-3" style="height:32px;width:70%"></div>
+      <div class="dk-skeleton mb-2" style="height:18px;width:35%"></div>
+      <div class="dk-skeleton mb-4" style="height:44px;width:45%"></div>
+      <div class="dk-skeleton" style="height:100px"></div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div id="product-detail" class="row g-5 hidden">
+    <div class="col-md-5">
+      <div class="dk-img-main" id="img-main"></div>
+    </div>
+    <div class="col-md-7">
+      <div id="product-type-tag" class="dk-card-type mb-2" style="font-size:.8rem"></div>
+      <h1 id="product-name" style="font-size:1.7rem;font-weight:800;color:var(--text-primary);line-height:1.25;margin-bottom:.75rem"></h1>
+
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <span id="stars" style="color:var(--neon-c);font-size:1.05rem;letter-spacing:1px"></span>
+        <span id="rating-num" style="font-weight:700;color:var(--text-primary)"></span>
+        <span id="sold-count" style="color:var(--text-muted);font-size:.855rem"></span>
+      </div>
+
+      <div class="d-flex align-items-baseline gap-3 mb-3">
+        <div id="price" class="dk-price" style="font-size:2rem"></div>
+        <div id="price-old" class="dk-price-old" style="font-size:1rem"></div>
+        <span id="discount-tag" class="dk-card-badge hidden" style="font-size:.85rem;padding:.25rem .7rem"></span>
+      </div>
+
+      <p id="description" style="color:var(--text-secondary);line-height:1.75;margin-bottom:1.25rem"></p>
+      <div id="specs" class="mb-4"></div>
+
+      <div class="mb-4">
+        <div style="font-size:.855rem;font-weight:600;color:var(--text-muted);margin-bottom:.6rem">Số lượng:</div>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <button class="dk-qty-big-btn" onclick="changeQty(-1)">−</button>
+          <span id="qty-display" style="font-size:1.1rem;font-weight:800;color:var(--text-primary);min-width:24px;text-align:center">1</span>
+          <button class="dk-qty-big-btn" onclick="changeQty(1)">+</button>
+          <span id="stock-info" style="font-size:.82rem;color:var(--text-muted)"></span>
+        </div>
+        <div class="d-flex gap-3 flex-wrap">
+          <button onclick="doAddCart()" class="dk-btn-primary" style="flex:1;max-width:260px;border-radius:12px;justify-content:center">
+            <i class="fas fa-shopping-bag me-2"></i>Thêm vào giỏ hàng
+          </button>
+          <button onclick="doBuyNow()" style="flex:1;max-width:180px;background:var(--grad-warm);color:#fff;border:none;border-radius:12px;padding:.8rem 1.5rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s"
+            onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+            <i class="fas fa-bolt me-1"></i>Mua ngay
+          </button>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-3">
+        <span style="font-size:.78rem;color:var(--text-muted)"><i class="fas fa-shield-alt me-1" style="color:var(--neon-d)"></i>Hàng chính hãng</span>
+        <span style="font-size:.78rem;color:var(--text-muted)"><i class="fas fa-undo me-1" style="color:var(--neon-b)"></i>Đổi trả 30 ngày</span>
+        <span style="font-size:.78rem;color:var(--text-muted)"><i class="fas fa-truck me-1" style="color:var(--neon-a)"></i>Giao nhanh 2–5 ngày</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs-section" class="mt-5 hidden">
+    <div class="dk-tab-nav">
+      <button class="dk-tab-nav-btn active" onclick="switchTab(0,this)">Mô tả sản phẩm</button>
+      <button class="dk-tab-nav-btn" onclick="switchTab(1,this)">Thông số kỹ thuật</button>
+      <button class="dk-tab-nav-btn" onclick="switchTab(2,this)">Đánh giá (128)</button>
+    </div>
+    <div id="tab-0"><p id="full-description" style="color:var(--text-secondary);line-height:1.9;max-width:720px"></p></div>
+    <div id="tab-1" class="hidden"><div id="full-specs" style="max-width:580px"></div></div>
+    <div id="tab-2" class="hidden"><div id="reviews-list"></div></div>
+  </div>
+
+  <!-- AI REC -->
+  <div id="ai-rec-section" class="mt-5 hidden">
+    <div style="background:var(--glass);border:1px solid var(--border-md);border-radius:var(--radius-xl);padding:1.75rem;margin-bottom:1.5rem;backdrop-filter:var(--blur-sm)">
+      <div class="dk-ai-tag"><i class="fas fa-robot me-1"></i> AI gợi ý</div>
+      <h4 style="font-weight:800;color:var(--text-primary);margin:.4rem 0">Sản phẩm liên quan dành cho bạn</h4>
+      <p style="color:var(--text-muted);font-size:.875rem;margin:0">Dựa trên sản phẩm bạn đang xem</p>
+    </div>
+    <div id="ai-rec-list" class="row g-3"></div>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<button class="dk-chatbot-fab" onclick="toggleChatbot()"><i class="fas fa-robot" id="chatbot-icon"></i></button>
+<div class="dk-chatbot-panel hidden" id="chatbot-panel">
+  <div class="dk-chatbot-header">
+    <div class="dk-chatbot-avatar">🤖</div>
+    <div><div class="dk-chatbot-name">EcomAI Assistant</div><div class="dk-chatbot-status">● Tư vấn sản phẩm</div></div>
+    <button class="dk-chatbot-close" onclick="toggleChatbot()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="dk-chatbot-msgs" id="chatbot-messages"></div>
+  <div class="dk-chatbot-input-area">
+    <input id="chatbot-input" class="dk-chatbot-input" placeholder="Hỏi về sản phẩm..." onkeydown="if(event.key==='Enter')sendChat()"/>
+    <button class="dk-chatbot-send" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<footer class="dk-footer"><div class="container"><div class="dk-footer-bottom" style="border-top:none;padding-top:0">© 2026 EcomAI Dark</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js?v=4"></script>
+<script src="js/products-data.js?v=4"></script>
+<script src="js/chatbot.js?v=4"></script>
+<script>
+let currentProduct = null, qty = 1;
+const pid = parseInt(new URLSearchParams(location.search).get('id')) || 1;
+
+function changeQty(d) {
+  qty = Math.max(1, Math.min(qty + d, currentProduct?.stock || 99));
+  document.getElementById('qty-display').textContent = qty;
+}
+
+function doAddCart() {
+  if (!currentProduct) return;
+  Cart.add(currentProduct, qty);
+  Toast.show(`Đã thêm <strong>${currentProduct.name}</strong> (×${qty}) vào giỏ!`);
+}
+
+function doBuyNow() { doAddCart(); setTimeout(() => location.href = 'cart-dark.html', 500); }
+
+function switchTab(idx, btn) {
+  [0,1,2].forEach(i => document.getElementById(`tab-${i}`).classList.toggle('hidden', i !== idx));
+  document.querySelectorAll('.dk-tab-nav-btn').forEach((b,i) => b.classList.toggle('active', i === idx));
+}
+
+function specHtml(product) {
+  const s = [];
+  if (product.book_detail) {
+    const b = product.book_detail;
+    if (b.author)    s.push(['Tác giả', b.author]);
+    if (b.publisher) s.push(['NXB', b.publisher]);
+    if (b.isbn)      s.push(['ISBN', b.isbn]);
+    if (b.pages)     s.push(['Số trang', b.pages]);
+    if (b.language)  s.push(['Ngôn ngữ', b.language]);
+  }
+  if (product.electronics_detail) {
+    const e = product.electronics_detail;
+    if (e.brand)           s.push(['Thương hiệu', e.brand]);
+    if (e.warranty_months) s.push(['Bảo hành', e.warranty_months + ' tháng']);
+    if (e.color)           s.push(['Màu sắc', e.color]);
+  }
+  if (product.fashion_detail) {
+    const f = product.fashion_detail;
+    if (f.brand)    s.push(['Thương hiệu', f.brand]);
+    if (f.size)     s.push(['Kích thước', f.size]);
+    if (f.color)    s.push(['Màu sắc', f.color]);
+    if (f.material) s.push(['Chất liệu', f.material]);
+  }
+  s.push(['Tình trạng', product.stock > 0 ? `Còn hàng (${product.stock})` : 'Hết hàng']);
+  return s.map(([k,v]) => `<div class="dk-spec-row"><span class="dk-spec-label">${k}</span><span class="dk-spec-value">${v}</span></div>`).join('');
+}
+
+function renderReviews() {
+  const reviews = [
+    { user:'Nguyễn Văn A', rating:5, text:'Sản phẩm rất tốt, đúng mô tả, giao hàng nhanh!', date:'10/05/2026' },
+    { user:'Trần Thị B',   rating:4, text:'Chất lượng ổn, đóng gói cẩn thận. Sẽ mua lại.', date:'08/05/2026' },
+    { user:'Lê Minh C',    rating:5, text:'Tuyệt vời! AI gợi ý đúng sản phẩm tôi cần.', date:'05/05/2026' },
+  ];
+  document.getElementById('reviews-list').innerHTML = reviews.map(r => `
+    <div class="dk-review-card">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <div style="width:34px;height:34px;background:var(--grad-main);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.85rem">${r.user[0]}</div>
+        <div>
+          <div style="font-weight:700;font-size:.855rem;color:var(--text-primary)">${r.user}</div>
+          <div style="color:var(--neon-c);font-size:.78rem">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+        <span style="margin-left:auto;font-size:.75rem;color:var(--text-muted)">${r.date}</span>
+      </div>
+      <p style="margin:0;font-size:.855rem;color:var(--text-secondary)">${r.text}</p>
+    </div>`).join('');
+}
+
+async function loadProduct() {
+  let product;
+  try {
+    product = await API.getProduct(pid);
+    if (!product?.id) throw new Error();
+  } catch {
+    product = MOCK_PRODUCTS.find(p => p.id === pid) || MOCK_PRODUCTS[0];
+  }
+  currentProduct = product;
+  document.getElementById('breadcrumb-name').textContent = product.name;
+  document.title = product.name + ' — EcomAI Dark';
+
+  const v = getVisual(product.product_type);
+  const img = product.image_url || getTypeImage(product.product_type, product.id);
+  const imgMain = document.getElementById('img-main');
+  imgMain.style.background = v.gradient;
+  imgMain.innerHTML = img
+    ? `<img src="${img}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'">`
+    : `<div style="font-size:8rem">${v.icon}</div>`;
+
+  document.getElementById('product-type-tag').innerHTML = `${v.icon} ${fmt.typeLabel(product.product_type)}`;
+  document.getElementById('product-name').textContent = product.name;
+  document.getElementById('stars').textContent = '★'.repeat(Math.round(product.rating||4.5))+'☆'.repeat(5-Math.round(product.rating||4.5));
+  document.getElementById('rating-num').textContent = `${product.rating||4.5}/5`;
+  document.getElementById('sold-count').textContent = `· ${product.sold_count||0} đã bán`;
+  document.getElementById('price').textContent = fmt.price(product.price);
+  if (product.original_price) {
+    document.getElementById('price-old').textContent = fmt.price(product.original_price);
+    document.getElementById('discount-tag').textContent = `-${product.discount_percent}%`;
+    document.getElementById('discount-tag').classList.remove('hidden');
+  }
+  document.getElementById('description').textContent = product.description || `${product.name} — sản phẩm chất lượng cao.`;
+  document.getElementById('stock-info').textContent = `Còn ${product.stock||99} sản phẩm`;
+
+  const sh = specHtml(product);
+  document.getElementById('specs').innerHTML = sh.substring(0, sh.indexOf('</div>', 300) + 6);
+  document.getElementById('full-specs').innerHTML = sh;
+  document.getElementById('full-description').textContent =
+    (product.description || '') + ` ${product.name} là lựa chọn hàng đầu trong phân khúc ${fmt.typeLabel(product.product_type)}, được nhiều khách hàng tin tưởng.`;
+
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('product-detail').classList.remove('hidden');
+  document.getElementById('tabs-section').classList.remove('hidden');
+  renderReviews();
+  loadAIRec(product);
+}
+
+async function loadAIRec(product) {
+  const section = document.getElementById('ai-rec-section');
+  const list    = document.getElementById('ai-rec-list');
+  const recs = MOCK_PRODUCTS.filter(p => p.id !== product.id).slice(0,4);
+  list.innerHTML = recs.map(p => {
+    const v = getVisual(p.product_type);
+    const img = p.image_url || getTypeImage(p.product_type, p.id);
+    return `<div class="col-6 col-md-3">
+      <div class="dk-card" onclick="location.href='product-detail-dark.html?id=${p.id}'">
+        <div class="dk-card-img" style="background:${v.gradient};height:160px">
+          <img src="${img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+        </div>
+        <div class="dk-card-body">
+          <div class="dk-card-type">${v.icon} ${fmt.typeLabel(p.product_type)}</div>
+          <div class="dk-card-name">${p.name}</div>
+          <div class="dk-card-footer">
+            <div class="dk-price">${fmt.price(p.price)}</div>
+            <button class="dk-add-btn" onclick="event.stopPropagation();Cart.add(${JSON.stringify(p).replace(/"/g,'&quot;')});Toast.show('Đã thêm!')"><i class="fas fa-plus"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  section.classList.remove('hidden');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const user = Auth.getUser();
+  const area = document.getElementById('auth-area');
+  if (area && user) {
+    const av = (user.first_name||user.username||'U')[0].toUpperCase();
+    area.innerHTML = `<div class="d-flex align-items-center gap-2">
+      <div style="width:30px;height:30px;background:var(--grad-main);border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem">${av}</div>
+      <button onclick="Auth.logout()" style="background:none;border:1px solid var(--border);border-radius:7px;padding:.25rem .65rem;font-size:.75rem;color:var(--text-muted);cursor:pointer">Đăng xuất</button>
+    </div>`;
+  } else if (area) {
+    area.innerHTML = `<a href="auth-dark.html" style="background:var(--grad-main);color:#fff;border-radius:9px;padding:.38rem .9rem;font-size:.82rem;font-weight:600;text-decoration:none">Đăng nhập</a>`;
+  }
+});
+
+loadProduct();
+</script>
+</body>
+</html>

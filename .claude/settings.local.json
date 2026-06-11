@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\gateway\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\user-service\\\\users\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\product-service\\\\products\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\cart-service\\\\cart\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\order-service\\\\orders\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\payment-service\\\\payments\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\shipping-service\\\\shipping\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\ai-service\\\\models\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\ai-service\\\\rag\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\ai-service\\\\data\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\infrastructure\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\healthcare-demo\\\\patient_service\\\\patients\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\healthcare-demo\\\\doctor_service\\\\doctors\" \"d:\\\\Tai_lieu_nam_4\\\\Ki_2\\\\S.A&D\\\\TieuLuanV2\\\\ecom-final\\\\healthcare-demo\\\\appointment_service\\\\appointments\" *)",
+      "Bash(docker --version)",
+      "Bash(docker-compose --version)",
+      "Bash(docker compose *)",
+      "Bash(D\\\\TieuLuanV2\\\\ecom-final\\\\order-service\\\\\")",
+      "Bash(D\\\\TieuLuanV2\\\\ecom-final\\\\shipping-service\\\\\")",
+      "Bash(docker exec *)",
+      "Bash(mkdir -p \"d:/Tai_lieu_nam_4/Ki_2/S.A&D/TieuLuanV2/ecom-final/user-service/users/migrations\")",
+      "Bash(echo \"\")"
+    ],
+    "additionalDirectories": [
+      "d:\\Tai_lieu_nam_4\\Ki_2\\S.A&D\\TieuLuanV2\\ecom-final"
+    ]
+  }
+}
