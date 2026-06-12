@@ -81,12 +81,13 @@
 |  | DB:Postgres |  | DB:Postgres |  | DB:Postgres |       |
 |  +-------------+  +-------------+  +-------------+       |
 |                                                           |
-|              +---------------------+                      |
-|              |     AI Context      |                      |
-|              |  ai-service         |                      |
-|              |  Port: 8006         |                      |
-|              |  FastAPI + LSTM+RAG |                      |
-|              +---------------------+                      |
+|  +---------------------------+  +----------------------+ |
+|  |        AI Context         |  |  Shared Infra        | |
+|  |  ai-service                |  |  Redis (cache)      | |
+|  |  Port: 8006                |  |  Neo4j (KB_Graph)   | |
+|  |  FastAPI + PyTorch BiLSTM  |  |  Port: 6379 / 7474, | |
+|  |  + KB_Graph + Graph-RAG    |  |  7687               | |
+|  +---------------------------+  +----------------------+ |
 +-----------------------------------------------------------+
                         |
               +---------v---------+
@@ -110,28 +111,27 @@
 
 ### 2.3.1 Class Diagram — User Service
 
+User Service được thiết kế theo DDD: **User** là Aggregate Root, **FullName** là Value Object (quan hệ 1-1), **Address** là Entity (quan hệ 1-N).
+
 ```
-+----------------------------------------+
-|           User Service                 |
-|                                        |
-|  +----------------------------------+  |
-|  |    User (extends AbstractUser)   |  |
-|  +----------------------------------+  |
-|  | + id: BigInt (PK)                |  |
-|  | + username: str (unique)         |  |
-|  | + email: str                     |  |
-|  | + password: str (bcrypt hashed)  |  |
-|  | + role: enum [admin|staff|cust]  |  |
-|  | + phone: str (nullable)          |  |
-|  | + address: text (nullable)       |  |
-|  | + is_active: bool                |  |
-|  | + created_at: datetime           |  |
-|  | + updated_at: datetime           |  |
-|  +----------------------------------+  |
-|  | + is_admin(): bool               |  |
-|  | + is_staff_member(): bool        |  |
-|  | + is_customer(): bool            |  |
-|  +----------------------------------+  |
++----------------------------------------+      1:1      +----------------------+
+|     User (extends AbstractUser)         |<------------->|   FullName (VO)      |
+|     << Aggregate Root >>                |               +----------------------+
++----------------------------------------+               | + user: OneToOne(User)|
+| + id: BigInt (PK)                       |               | + last_name: str      |
+| + username: str (unique)                |               | + first_name: str     |
+| + email: str                            |               +----------------------+
+| + password: str (hashed)                |
+| + role: enum [admin|staff|customer]     |      1:N      +----------------------+
+| + phone: str (nullable)                 |<------------->|   Address (Entity)   |
+| + avatar: url (nullable)                |               +----------------------+
+| + is_active: bool                       |               | + user: FK(User)      |
+| + created_at: datetime                  |               | + address_line: text  |
+| + updated_at: datetime                  |               | + is_default: bool    |
++----------------------------------------+               | + created_at: datetime|
+| + is_admin(): bool                      |               +----------------------+
+| + is_staff_member(): bool               |
+| + is_customer(): bool                   |
 +----------------------------------------+
 ```
 
@@ -142,16 +142,23 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+
 class User(AbstractUser):
+    """
+    Custom User model với Role-Based Access Control (RBAC).
+    Aggregate Root — extends AbstractUser để dùng authentication có sẵn của Django.
+    """
     ROLE_CHOICES = (
-        ('admin',    'Admin'),
-        ('staff',    'Staff'),
+        ('admin', 'Admin'),
+        ('staff', 'Staff'),
         ('customer', 'Customer'),
     )
-    role       = models.CharField(max_length=20, choices=ROLE_CHOICES,
-                   default='customer', db_index=True)
-    phone      = models.CharField(max_length=15, blank=True, null=True)
-    address    = models.TextField(blank=True, null=True)
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES,
+                             default='customer', db_index=True)
+    phone = models.CharField(max_length=15, blank=True, null=True)
+    avatar = models.URLField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -162,6 +169,36 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == 'admin'
+
+    @property
+    def is_staff_member(self):
+        return self.role == 'staff'
+
+    @property
+    def is_customer(self):
+        return self.role == 'customer'
+
+
+class FullName(models.Model):
+    """Value Object — Họ và tên đầy đủ, quan hệ 1-1 với User."""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='full_name')
+    last_name = models.CharField(max_length=150, blank=True)
+    first_name = models.CharField(max_length=150, blank=True)
+
+    class Meta:
+        db_table = 'user_full_names'
+
+
+class Address(models.Model):
+    """Entity — Địa chỉ của người dùng, quan hệ 1-N với User."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
+    address_line = models.TextField()
+    is_default = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_addresses'
+        ordering = ['-is_default', '-created_at']
 ```
 
 ### 2.3.3 Phân quyền RBAC
@@ -183,21 +220,39 @@ CREATE TABLE users (
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     username    VARCHAR(150) NOT NULL UNIQUE,
     email       VARCHAR(254) NOT NULL,
-    password    VARCHAR(255) NOT NULL,  -- bcrypt hashed
-    first_name  VARCHAR(150),
-    last_name   VARCHAR(150),
+    password    VARCHAR(255) NOT NULL,  -- hashed (PBKDF2)
+    first_name  VARCHAR(150),           -- ke thua tu AbstractUser
+    last_name   VARCHAR(150),           -- ke thua tu AbstractUser
     role        ENUM('admin','staff','customer') DEFAULT 'customer',
     phone       VARCHAR(15),
-    address     TEXT,
+    avatar      VARCHAR(200),
     is_active   BOOLEAN DEFAULT TRUE,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_role (role),
     INDEX idx_active (is_active)
 );
+
+-- Value Object: Ho ten day du (1-1 voi User)
+CREATE TABLE user_full_names (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    last_name   VARCHAR(150),
+    first_name  VARCHAR(150)
+);
+
+-- Entity: Dia chi (1-N voi User)
+CREATE TABLE user_addresses (
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id      BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    address_line TEXT NOT NULL,
+    is_default   BOOLEAN DEFAULT TRUE,
+    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id)
+);
 ```
 
-**Lý do chọn MySQL**: Authentication workload đơn giản, hỗ trợ ENUM native, phổ biến và ổn định cho user data.
+**Lý do chọn MySQL**: Authentication workload đơn giản, hỗ trợ ENUM native, phổ biến và ổn định cho user data. Thiết kế tách `FullName` (Value Object) và `Address` (Entity) khỏi bảng `users` giúp tuân thủ nguyên tắc DDD — Aggregate Root chỉ chứa identity/role/credentials, các thuộc tính mô tả được tách thành VO/Entity riêng.
 
 ### 2.3.5 API Endpoints — User Service
 
@@ -423,8 +478,8 @@ CREATE TABLE fashion (
 | note: Text             |         | subtotal: prop        |
 | created_at: DateTime   |         +-----------------------+
 +------------------------+
- Status: pending -> confirmed -> paid -> shipping -> delivered
-         cancelled | refunded
+ Status: pending -> confirmed -> processing -> paid -> shipping -> delivered
+         (co the chuyen sang) cancelled | refunded tu cac trang thai truoc do
 ```
 
 ### 2.5.3 Database Schema — Các Service còn lại
@@ -452,6 +507,7 @@ CREATE TABLE cart_items (
 
 **Order Service (PostgreSQL)**:
 ```sql
+-- status: pending|confirmed|processing|paid|shipping|delivered|cancelled|refunded
 CREATE TABLE orders (
     id               BIGSERIAL PRIMARY KEY,
     user_id          INT NOT NULL,
@@ -460,7 +516,8 @@ CREATE TABLE orders (
     shipping_fee     NUMERIC(10,2) DEFAULT 0,
     status           VARCHAR(20) DEFAULT 'pending',
     note             TEXT,
-    created_at       TIMESTAMP DEFAULT NOW()
+    created_at       TIMESTAMP DEFAULT NOW(),
+    updated_at       TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE order_items (
     id            BIGSERIAL PRIMARY KEY,
@@ -474,6 +531,8 @@ CREATE TABLE order_items (
 
 **Payment Service (PostgreSQL)**:
 ```sql
+-- method: cod|bank_transfer|momo|vnpay|zalopay
+-- status: pending|processing|success|failed|refunded
 CREATE TABLE payments (
     id               BIGSERIAL PRIMARY KEY,
     transaction_id   UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
@@ -484,12 +543,14 @@ CREATE TABLE payments (
     status           VARCHAR(20) DEFAULT 'pending',
     gateway_response JSONB DEFAULT '{}',
     paid_at          TIMESTAMP,
-    created_at       TIMESTAMP DEFAULT NOW()
+    created_at       TIMESTAMP DEFAULT NOW(),
+    updated_at       TIMESTAMP DEFAULT NOW()
 );
 ```
 
 **Shipping Service (PostgreSQL)**:
 ```sql
+-- status: processing|picked_up|in_transit|out_for_delivery|delivered|failed|returned
 CREATE TABLE shipments (
     id                BIGSERIAL PRIMARY KEY,
     order_id          INT NOT NULL UNIQUE,
@@ -500,7 +561,8 @@ CREATE TABLE shipments (
     status            VARCHAR(30) DEFAULT 'processing',
     estimated_delivery DATE,
     delivered_at      TIMESTAMP,
-    created_at        TIMESTAMP DEFAULT NOW()
+    created_at        TIMESTAMP DEFAULT NOW(),
+    updated_at        TIMESTAMP DEFAULT NOW()
 );
 CREATE TABLE shipment_history (
     id          BIGSERIAL PRIMARY KEY,
@@ -581,20 +643,20 @@ Customer   Gateway    User-Svc  Product-Svc  Cart-Svc  Order-Svc  Payment-Svc  S
 ```
 [User DB - MySQL]              [Product DB - PostgreSQL]
    users                           categories
-    id, username                    id, name, slug, parent_id
-    password, role                 products
-    phone, address                  id, name, price, stock
-                                    product_type, category_id
-                                    image_url, rating
-                                   books (product_id FK)
-                                   electronics (product_id FK)
+    id, username, role              id, name, slug, parent_id
+    password, phone, avatar        products
+   user_full_names (1-1 VO)         id, name, price, stock
+    user_id, last_name, first_name  product_type, category_id
+   user_addresses (1-N Entity)      image_url, rating
+    user_id, address_line,         books (product_id FK)
+    is_default                     electronics (product_id FK)
                                    fashion (product_id FK)
 
 [Cart DB - PostgreSQL]         [Order DB - PostgreSQL]
    carts                           orders
     id, user_id                     id, user_id, total_price
-   cart_items                       status, shipping_address
-    cart_id FK, product_id          created_at
+   cart_items                       status (8 trang thai), shipping_address
+    cart_id FK, product_id          created_at, updated_at
     product_name, price            order_items
     quantity                        order_id FK, product_id
                                     product_name, price, qty
@@ -603,10 +665,16 @@ Customer   Gateway    User-Svc  Product-Svc  Cart-Svc  Order-Svc  Payment-Svc  S
    payments                        shipments
     id, transaction_id (UUID)       id, order_id (UNIQUE)
     order_id, user_id               tracking_code, carrier
-    amount, method, status          status, estimated_delivery
+    amount, method (5 loai)        status (7 trang thai)
+    status (5 trang thai)          estimated_delivery, delivered_at
     gateway_response (JSONB)       shipment_history
     paid_at                         shipment_id FK
                                     status, description, location
+
+[Redis - Cache]                [Neo4j - KB_Graph]
+   cache key-value                 (User)-[:CO_OCCURS]->(Product)
+   session/token cache             (User)-[:PREDICTED_NEXT_ACTION]->(Product)
+                                    dung cho /recommend/graph, Graph-RAG
 ```
 
 ### 2.7.2 So sánh MySQL vs PostgreSQL
@@ -625,10 +693,11 @@ Customer   Gateway    User-Svc  Product-Svc  Cart-Svc  Order-Svc  Payment-Svc  S
 ## 2.8 Kết luận Chương 2
 
 Hệ thống E-Commerce đã được thiết kế theo nguyên tắc DDD với:
-- **7 microservices** độc lập, mỗi service một database riêng
-- **6 databases** (1 MySQL + 5 PostgreSQL) theo mô hình Database-per-Service
-- **Class diagrams** rõ ràng cho từng service
+- **6 microservices Django** (user, product, cart, order, payment, shipping) + **1 AI Service FastAPI**, mỗi service một database riêng
+- **6 databases** (1 MySQL + 5 PostgreSQL) theo mô hình Database-per-Service, bổ sung **Redis** (cache) và **Neo4j** (KB_Graph) làm hạ tầng dùng chung
+- **User Service** áp dụng DDD đầy đủ: User là Aggregate Root, FullName là Value Object (1-1), Address là Entity (1-N)
+- **Class diagrams** rõ ràng cho từng service, đầy đủ enum trạng thái (Order 8 trạng thái, Payment 5 phương thức/5 trạng thái, Shipment 7 trạng thái)
 - **Sequence diagram** thể hiện luồng mua hàng end-to-end
-- **Django** xây dựng nhanh, ORM mạnh, phù hợp cho từng service CRUD
+- **Django** xây dựng nhanh, ORM mạnh, phù hợp cho từng service CRUD; **FastAPI** cho AI Service cần hiệu năng ML cao
 
 DDD giúp thiết kế đúng ranh giới service ngay từ đầu, tránh anti-pattern "monolith disguised as microservices".
