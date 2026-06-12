@@ -762,6 +762,16 @@ Response 200 OK:
 
 `PATCH /shipping/{id}/update/` đóng vai trò webhook cập nhật trạng thái vận chuyển (`picked_up -> in_transit -> out_for_delivery -> delivered`); khi `status='delivered'`, shipping-service tự gọi `PATCH order-service:8003/orders/{order_id}/status/` với `status='delivered'`.
 
+### 4.6.7 Minh họa KB_Graph (Neo4j)
+
+`ai-service/graph/visualize_kb_graph.py` trích xuất một phần KB_Graph từ Neo4j (mẫu 5 user đầu tiên: U1-U5) và vẽ bằng networkx/matplotlib, lưu kết quả tại `ai-service/graph/kb_graph_sample.png`:
+
+![KB_Graph Neo4j sample](ecom-final/ai-service/graph/kb_graph_sample.png)
+
+*Hình 4.2: Minh họa KB_Graph (Neo4j) — node hình tròn xanh là User, node hình vuông cam là Product. Các cạnh thể hiện 5 loại quan hệ: `VIEWED`, `CLICKED`, `ADDED_TO_CART` (User → Product, từ dữ liệu hành vi thực tế), `PREDICTED_NEXT_ACTION` (User → Product, dự đoán của model_best BiLSTM) và `CO_OCCURS` (Product → Product, đường nét đứt, hai sản phẩm cùng được một user tương tác).*
+
+Có thể tạo lại ảnh bằng cách chạy `docker exec ai-service python graph/visualize_kb_graph.py` (yêu cầu container `neo4j` đang chạy và KB_Graph đã được build qua `POST /graph/refresh` hoặc khi `ai-service` khởi động).
+
 ---
 
 ## 4.7 Đánh giá Hệ thống

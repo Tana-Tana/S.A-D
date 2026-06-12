@@ -52,12 +52,14 @@ def fetch_subgraph(driver):
         if product_ids:
             result = session.run("""
                 MATCH (p1:Product)-[c:CO_OCCURS]->(p2:Product)
-                WHERE p1.product_id IN $pids AND p2.product_id IN $pids
+                WHERE p1.product_id IN $pids OR p2.product_id IN $pids
                 RETURN p1.product_id AS p1, p2.product_id AS p2, c.weight AS weight
-                ORDER BY c.weight DESC LIMIT 15
+                ORDER BY c.weight DESC LIMIT 50
             """, pids=product_ids)
             for rec in result:
                 p1, p2 = f"P{rec['p1']}", f"P{rec['p2']}"
+                G.add_node(p1, kind='product')
+                G.add_node(p2, kind='product')
                 G.add_edge(p1, p2, rel='CO_OCCURS', weight=rec['weight'])
 
     return G
